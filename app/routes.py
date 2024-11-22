@@ -2,6 +2,9 @@
 
 from flask import Blueprint, request, redirect, url_for, render_template, session
 from .models import db, User, Listing
+from app.services.popularity import calculate_popularity
+from app.models import db
+
 
 main = Blueprint('main', __name__)
 
@@ -61,3 +64,16 @@ def add_listing():
 def listings():
     all_listings = Listing.query.all()
     return render_template('listings.html', listings=all_listings)
+
+@main.route('/popular-listings', methods=['GET'])
+def popular_listings():
+    results = calculate_popularity(db.session)
+    listings = [{
+        "ListingID": row[0],
+        "NameTool": row[1],
+        "Bookings": row[2],
+        "AverageRating": row[3],
+        "PopularityScore": row[4]
+    } for row in results]
+
+    return render_template('popular_listings.html', listings=listings)

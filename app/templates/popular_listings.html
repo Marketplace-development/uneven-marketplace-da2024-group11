@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Popular Listings</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Popular Listings</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Listing ID</th>
+                <th>Tool Name</th>
+                <th>Bookings</th>
+                <th>Average Rating</th>
+                <th>Popularity Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings %}
+            <tr>
+                <td>{{ listing.ListingID }}</td>
+                <td>{{ listing.NameTool }}</td>
+                <td>{{ listing.Bookings }}</td>
+                <td>{{ listing.AverageRating }}</td>
+                <td>{{ listing.PopularityScore }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
