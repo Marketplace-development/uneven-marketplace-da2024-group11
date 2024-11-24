@@ -17,23 +17,28 @@ class User(db.Model):
 class Customer(db.Model):
     __tablename__ = 'Customer'
     CustomerID = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    UserId = db.Column(db.BigInteger, db.ForeignKey('User.UserId'), nullable=False)  # Foreign key naar User
     TransactionID = db.Column(db.BigInteger, db.ForeignKey('Transaction.TransactionID'), nullable=True)
     premium = db.Column(db.Boolean, nullable=False, default=False)
     
-    # Foreign key relationship
+    # Relatie naar User
     user = db.relationship('User', backref=db.backref('customers', lazy=True))
+    # Relatie naar Transaction
     transaction = db.relationship('Transaction', backref=db.backref('customers', lazy=True))
+
 
 # Provider Table
 class Provider(db.Model):
     __tablename__ = 'Provider'
     ProviderID = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    UserId = db.Column(db.BigInteger, db.ForeignKey('User.UserId'), nullable=False)  # Foreign key naar User
     TransactionID = db.Column(db.BigInteger, db.ForeignKey('Transaction.TransactionID'), nullable=True)
     Premium_Provider = db.Column(db.Boolean, nullable=True, default=False)
 
-    # Foreign key relationship
+    # Relaties
     user = db.relationship('User', backref=db.backref('providers', lazy=True))
     transaction = db.relationship('Transaction', backref=db.backref('providers', lazy=True))
+
 
 # Listing Table
 class Listing(db.Model):

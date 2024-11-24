@@ -1,31 +1,28 @@
-# app/routes.py
-
 from flask import Blueprint, request, redirect, url_for, render_template, session
-from .models import db, User, Listing
+from app.models import db, User, Listing
 from app.services.popularity import calculate_popularity
 from app.services.pricing import dynamic_pricing_advanced
-
-
+from app.services.search import search_and_filter
 
 main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
     if 'user_id' in session:
-        user = User.query.get(session['user_id'])
-        listings = Listing.query.filter_by(user_id=user.id).all()  # Fetch listings for logged-in user
-        return render_template('index.html', username=user.username, listings=listings)
+        user = User.query.get_or_404(session['user_id'])
+        listings = Listing.query.filter_by(ProviderID=user.UserId).all()  # Pas de kolomnaam aan je database aan
+        return render_template('index.html', username=user.userName, listings=listings)
     return render_template('index.html', username=None)
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
-        if User.query.filter_by(username=username).first() is None:
-            new_user = User(username=username)
+        if User.query.filter_by(userName=username).first() is None:
+            new_user = User(userName=username)
             db.session.add(new_user)
             db.session.commit()
-            session['user_id'] = new_user.id
+            session['user_id'] = new_user.UserId
             return redirect(url_for('main.index'))
         return 'Username already registered'
     return render_template('register.html')
@@ -34,9 +31,9 @@ def register():
 def login():
     if request.method == 'POST':
         username = request.form['username']
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(userName=username).first()
         if user:
-            session['user_id'] = user.id
+            session['user_id'] = user.UserId
             return redirect(url_for('main.index'))
         return 'User not found'
     return render_template('login.html')
@@ -54,7 +51,7 @@ def add_listing():
     if request.method == 'POST':
         listing_name = request.form['listing_name']
         price = float(request.form['price'])
-        new_listing = Listing(listing_name=listing_name, price=price, user_id=session['user_id'])
+        new_listing = Listing(NameTool=listing_name, PriceSetByProvider=price, ProviderID=session['user_id'])
         db.session.add(new_listing)
         db.session.commit()
         return redirect(url_for('main.listings'))
@@ -76,18 +73,37 @@ def popular_listings():
         "AverageRating": row[3],
         "PopularityScore": row[4]
     } for row in results]
-
     return render_template('popular_listings.html', listings=listings)
 
 @main.route('/pricing', methods=['GET'])
 def pricing():
-    session = db.session
-    pricing_data = dynamic_pricing_advanced(session)
+    pricing_data = dynamic_pricing_advanced(db.session)
     return render_template('pricing.html', pricing_data=pricing_data)
 
 @main.route('/listing/<int:id>')
 def listing_detail(id):
-    listing = Listing.query.get(id)
-    if not listing:
-        return 'Listing not found', 404
+    listing = Listing.query.get_or_404(id)  # Gebruik get_or_404 voor betere foutafhandeling
     return render_template('listing_detail.html', listing=listing)
+
+@main.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        search_term = request.form.get('search_term', None)
+        price_range = (
+            float(request.form.get('min_price', 0)),
+            float(request.form.get('max_price', float('inf')))
+        ) if request.form.get('min_price') or request.form.get('max_price') else None
+
+        filters = {
+            "Brand": request.form.get('brand', None),
+            "FuelType": request.form.get('fuel_type', None),
+            "PriceRange": price_range,
+            "Availability": request.form.get('availability', 'false') == 'true'
+        }
+
+        filters = {k: v for k, v in filters.items() if v is not None}
+
+        results = search_and_filter(db.session, search_term, filters)
+        return render_template('search_results.html', results=results)
+
+    return render_template('search.html')
