@@ -3,7 +3,8 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session
 from .models import db, User, Listing
 from app.services.popularity import calculate_popularity
-from app.models import db
+from app.services.pricing import dynamic_pricing_advanced
+
 
 
 main = Blueprint('main', __name__)
@@ -77,3 +78,16 @@ def popular_listings():
     } for row in results]
 
     return render_template('popular_listings.html', listings=listings)
+
+@main.route('/pricing', methods=['GET'])
+def pricing():
+    session = db.session
+    pricing_data = dynamic_pricing_advanced(session)
+    return render_template('pricing.html', pricing_data=pricing_data)
+
+@main.route('/listing/<int:id>')
+def listing_detail(id):
+    listing = Listing.query.get(id)
+    if not listing:
+        return 'Listing not found', 404
+    return render_template('listing_detail.html', listing=listing)
