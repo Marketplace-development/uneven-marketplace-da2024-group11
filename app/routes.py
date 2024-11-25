@@ -3,6 +3,7 @@ from app.models import db, User, Listing
 from app.services.popularity import calculate_popularity
 from app.services.pricing import dynamic_pricing_advanced
 from app.services.search import search_and_filter
+from app.services.recommendation import recommend_tools
 
 main = Blueprint('main', __name__)
 
@@ -107,3 +108,13 @@ def search():
         return render_template('search_results.html', results=results)
 
     return render_template('search.html')
+
+@main.route('/recommendations', methods=['GET'])
+def recommendations():
+    if 'user_id' not in session:
+        return redirect(url_for('main.login'))
+
+    user_id = session['user_id']
+    recommendations = recommend_tools(db.session, user_id)
+
+    return render_template('recommendations.html', recommendations=recommendations)
