@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Pricing</title>
+</head>
+<body>
+    <h1>Dynamic Pricing Results</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Listing ID</th>
+                <th>Tool Name</th>
+                <th>Base Price</th>
+                <th>Demand</th>
+                <th>Suggested Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in pricing_data %}
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+                <td>{{ item[2] }}</td>
+                <td>{{ item[3] }}</td>
+                <td>{{ item[4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
