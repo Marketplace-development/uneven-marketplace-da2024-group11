@@ -1,4 +1,4 @@
-#!/Users/arneclarisse/Documents/GitHub/uneven-marketplace-da2024-group11/venv/bin/python3
+#!/Users/glennnevens/Documents/GitHub/uneven-marketplace-da2024-group11/venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys
