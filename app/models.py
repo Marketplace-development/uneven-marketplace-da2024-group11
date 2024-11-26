@@ -6,12 +6,12 @@ db = SQLAlchemy()
 class User(db.Model):
     __tablename__ = 'User'
     UserId = db.Column(db.BigInteger, primary_key=True, autoincrement=True, unique=True)
-    userName = db.Column(db.String, nullable=True)
-    email = db.Column(db.String, nullable=True)
-    Address = db.Column(db.String, nullable=True)
-    Postal_code = db.Column(db.Integer, nullable=True)
-    City = db.Column(db.String, nullable=True)
-    Phone_number = db.Column(db.Numeric, nullable=True)
+    userName = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
+    Address = db.Column(db.String, nullable=False)
+    Postal_code = db.Column(db.Integer, nullable=False)
+    City = db.Column(db.String, nullable=False)
+    Phone_number = db.Column(db.Numeric, nullable=False)
 
 # Customer Table
 class Customer(db.Model):
