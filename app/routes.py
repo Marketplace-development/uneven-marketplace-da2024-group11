@@ -11,8 +11,8 @@ main = Blueprint('main', __name__)
 def index():
     if 'user_id' in session:
         user = User.query.get_or_404(session['user_id'])
-        listings = Listing.query.filter_by(ProviderID=user.UserId).all()  # Zorg ervoor dat 'ProviderID' correct is
-        return render_template('index.html', username=user.userName, listings=listings)
+        listings = Listing.query.filter_by(ProviderID=user.Phone_number).all()  # Zorg ervoor dat 'ProviderID' correct is
+        return render_template('index.html', username=user.UserName, listings=listings)
     return render_template('index.html', username=None)
 
 
@@ -34,8 +34,8 @@ def register():
 
         # Maak een nieuwe gebruiker aan
         new_user = User(
-            userName=username,
-            email=email,
+            UserName=username,
+            Email=email,
             Address=address,
             Postal_code=postal_code,
             City=city,
