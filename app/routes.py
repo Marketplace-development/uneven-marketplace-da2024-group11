@@ -18,14 +18,34 @@ def index():
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
+        # Haal alle ingevoerde gegevens op uit het formulier
+        username = request.form.get('username')
+        email = request.form.get('email')
+        address = request.form.get('address')
+        postal_code = request.form.get('postal_code')
+        city = request.form.get('city')
+        phone_number = request.form.get('phone_number')
+
+        # Controleer of de gebruiker al bestaat
         if User.query.filter_by(userName=username).first() is None:
-            new_user = User(userName=username)
+            # Maak een nieuwe gebruiker aan met alle velden
+            new_user = User(
+                userName=username,
+                email=email,
+                Address=address,
+                Postal_code=postal_code,
+                City=city,
+                Phone_number=phone_number
+            )
             db.session.add(new_user)
             db.session.commit()
+
+            # Sla de gebruiker op in de sessie en stuur door naar de homepage
             session['user_id'] = new_user.UserId
             return redirect(url_for('main.index'))
-        return 'Username already registered'
+        else:
+            return 'Username already registered'
+
     return render_template('register.html')
 
 @main.route('/login', methods=['GET', 'POST'])
