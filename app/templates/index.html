@@ -10,7 +10,10 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">EasyTools</a>
-            <div class="collapse navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if username %}
                         <li class="nav-item">
@@ -18,7 +21,8 @@
                         </li>
                         <li class="nav-item">
                             <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
-                                <button class="btn btn-danger btn-sm" type="submit">Logout</button>
+                                {{ csrf_token() }}
+                                <button class="btn btn-danger btn-sm" type="submit" aria-label="Log out">Logout</button>
                             </form>
                         </li>
                     {% else %}
@@ -44,7 +48,7 @@
                         <ul class="list-group">
                             {% for listing in listings %}
                                 <li class="list-group-item">
-                                    {{ listing.listing_name }} - ${{ "%.2f"|format(listing.price) }}
+                                    {{ listing.name_tool }} - ${{ "%.2f"|format(listing.price_set_by_provider) }}
                                 </li>
                             {% endfor %}
                         </ul>
