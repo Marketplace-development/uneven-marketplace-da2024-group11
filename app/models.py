@@ -2,84 +2,50 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-# User Table
 class User(db.Model):
     __tablename__ = 'User'
-    UserId = db.Column(db.BigInteger, primary_key=True, autoincrement=True, unique=True)
-    userName = db.Column(db.String, nullable=True)
-    email = db.Column(db.String, nullable=True)
-    Address = db.Column(db.String, nullable=True)
-    Postal_code = db.Column(db.Integer, nullable=True)
-    City = db.Column(db.String, nullable=True)
-    Phone_number = db.Column(db.Numeric, nullable=True)
+    phone_number = db.Column('Phone number', db.BigInteger, primary_key=True, nullable=False, unique=True)
+    username = db.Column('UserName', db.Text, nullable=False)
+    address = db.Column('Address', db.Text, nullable=False)
+    postal_code = db.Column('Postal_code', db.Integer, nullable=False)
+    city = db.Column('City', db.Text, nullable=False)
+    email = db.Column('Email', db.Text, nullable=False, unique=True)
 
-# Customer Table
 class Customer(db.Model):
     __tablename__ = 'Customer'
-    CustomerID = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    UserId = db.Column(db.BigInteger, db.ForeignKey('User.UserId'), nullable=False)  # Foreign key naar User
-    TransactionID = db.Column(db.BigInteger, db.ForeignKey('Transaction.TransactionID'), nullable=True)
+    phone_c = db.Column('PhoneC', db.BigInteger, db.ForeignKey('User.Phone number'), primary_key=True, autoincrement=True)
     premium = db.Column(db.Boolean, nullable=False, default=False)
-    
-    # Relatie naar User
-    user = db.relationship('User', backref=db.backref('customers', lazy=True))
-    # Relatie naar Transaction
-    transaction = db.relationship('Transaction', backref=db.backref('customers', lazy=True))
 
-
-# Provider Table
 class Provider(db.Model):
     __tablename__ = 'Provider'
-    ProviderID = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    UserId = db.Column(db.BigInteger, db.ForeignKey('User.UserId'), nullable=False)  # Foreign key naar User
-    TransactionID = db.Column(db.BigInteger, db.ForeignKey('Transaction.TransactionID'), nullable=True)
-    Premium_Provider = db.Column(db.Boolean, nullable=True, default=False)
+    providerp = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    premium_provider = db.Column('Premium Provider', db.Boolean, nullable=True, default=False)
+    user_phone = db.Column(db.BigInteger, db.ForeignKey('User.Phone number'), nullable=False, unique=True)
 
-    # Relaties
-    user = db.relationship('User', backref=db.backref('providers', lazy=True))
-    transaction = db.relationship('Transaction', backref=db.backref('providers', lazy=True))
-
-
-# Listing Table
 class Listing(db.Model):
     __tablename__ = 'Listing'
-    ListingID = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    NameTool = db.Column(db.String, nullable=True)
-    Brand = db.Column(db.String, nullable=True)
-    Condition = db.Column(db.String, nullable=True)
-    DifficultyLevel = db.Column(db.String, nullable=True)
-    BatteryIncluded = db.Column(db.Boolean, nullable=True)
-    ProductCode = db.Column(db.BigInteger, nullable=True)
-    PriceSetByProvider = db.Column(db.Numeric, nullable=True)
-    Availability = db.Column(db.Boolean, nullable=True)
-    ProviderID = db.Column(db.BigInteger, db.ForeignKey('Provider.ProviderID'), nullable=True)
+    listing_id = db.Column('ListingID', db.BigInteger, primary_key=True, autoincrement=True)
+    name_tool = db.Column('NameTool', db.Text, nullable=False)
+    brand = db.Column('Brand', db.Text, nullable=True)
+    condition = db.Column('Condition', db.Text, nullable=True)
+    battery_included = db.Column('BatteryIncluded', db.Boolean, nullable=True)
+    product_code = db.Column('ProductCode', db.BigInteger, nullable=True)
+    price_set_by_provider = db.Column('PriceSetByProvider', db.Numeric, nullable=True)
+    availability = db.Column('Availability', db.Boolean, nullable=True)
+    provider_id = db.Column('ProviderID', db.BigInteger, db.ForeignKey('Provider.providerp'), nullable=False)
 
-    # Foreign key relationship
-    provider = db.relationship('Provider', backref=db.backref('listings', lazy=True))
-
-# Transaction Table
 class Transaction(db.Model):
-    __tablename__ = 'Transaction'
-    TransactionID = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    Status = db.Column(db.String, nullable=True)
-    commissionFee = db.Column(db.String, nullable=True)
-    bookedQuantity = db.Column(db.BigInteger, nullable=True)
-    ListingID = db.Column(db.BigInteger, db.ForeignKey('Listing.ListingID'), nullable=True)
-    Date = db.Column(db.DateTime(timezone=True), nullable=True)
+    __tablename__ = 'Transactie'
+    listing_id = db.Column('listingID', db.BigInteger, db.ForeignKey('Listing.ListingID'), primary_key=True)
+    provider_id = db.Column('ProviderP', db.BigInteger, db.ForeignKey('Provider.providerp'), primary_key=True)
+    customer_phone = db.Column('PhoneC', db.BigInteger, db.ForeignKey('Customer.PhoneC'), primary_key=True)
+    commission_fee = db.Column('Commission fee', db.Float, nullable=True)
+    date = db.Column('Date', db.DateTime(timezone=True), nullable=True)
 
-    # Foreign key relationship
-    listing = db.relationship('Listing', backref=db.backref('transactions', lazy=True))
-
-# Review Table
 class Review(db.Model):
-    __tablename__ = 'Review'
-    ReviewID = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    CustomerID = db.Column(db.BigInteger, db.ForeignKey('Customer.CustomerID'), nullable=True)
-    ProviderID = db.Column(db.BigInteger, db.ForeignKey('Provider.ProviderID'), nullable=True)
-    Rating = db.Column(db.SmallInteger, nullable=True)
-    Comment = db.Column(db.String, nullable=True)
-    Date = db.Column(db.DateTime(timezone=True), nullable=True)
-
-    # Foreign key relationship
-    customer = db.relationship('Customer', backref=db.backref('reviews', lazy=True))
-    provider = db.relationship('Provider', backref=db.backref('reviews', lazy=True))
+    __tablename__ = 'review'
+    review_id = db.Column('ReviewID', db.BigInteger, primary_key=True, autoincrement=True)
+    customer_id = db.Column('CustomerID', db.BigInteger, db.ForeignKey('Customer.PhoneC'), nullable=True)
+    rating = db.Column('Rating', db.SmallInteger, nullable=True)
+    comment = db.Column('Comment', db.Text, nullable=True)
+    date = db.Column('date', db.DateTime(timezone=True), nullable=True)
