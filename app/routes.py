@@ -45,7 +45,7 @@ def register():
         db.session.commit()
 
         # Sla de gebruiker op in de sessie
-        session['user_id'] = new_user.UserId
+        session['phone_number'] = new_user.phone_number
         return redirect(url_for('main.index'))
 
     return render_template('register.html')
@@ -60,7 +60,7 @@ def login():
             return 'Invalid phone number', 404
 
         # Log de gebruiker in door de sessie bij te werken
-        session['user_id'] = user.UserId
+        session['phone_number'] = user.Phone_number
         return redirect(url_for('main.index'))
 
     return render_template('login.html')
@@ -68,7 +68,7 @@ def login():
 
 @main.route('/add-listing', methods=['GET', 'POST'])
 def add_listing():
-    if 'user_id' not in session:
+    if 'phone_number' not in session:
         return redirect(url_for('main.login'))
 
     if request.method == 'POST':
@@ -177,9 +177,9 @@ def search():
 
 @main.route('/recommendations', methods=['GET'])
 def recommendations():
-    if 'user_id' not in session:
+    if 'phone_number' not in session:
         return redirect(url_for('main.login'))
 
-    user_id = session['user_id']
+    user_id = session['uphone_number']
     recommendations = recommend_tools(db.session, user_id)
     return render_template('recommendations.html', recommendations=recommendations)
