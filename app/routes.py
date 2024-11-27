@@ -4,16 +4,17 @@ from app.services.popularity import calculate_popularity
 from app.services.pricing import dynamic_pricing_advanced
 from app.services.search import search_and_filter
 from app.services.recommendation import recommend_tools
-
+from .forms import LoginForm
 main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
+    loginform=LoginForm()
     if 'user_id' in session:
         user = User.query.get_or_404(session['user_id'])
         listings = Listing.query.filter_by(ProviderID=user.Phone_number).all()  # Zorg ervoor dat 'ProviderID' correct is
         return render_template('index.html', username=user.UserName, listings=listings)
-    return render_template('index.html', username=None)
+    return render_template('index.html', form=loginform)
 
 
 @main.route('/register', methods=['GET', 'POST'])

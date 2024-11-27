@@ -4,7 +4,7 @@ db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = 'User'
-    phone_number = db.Column('Phone number', db.BigInteger, primary_key=True, nullable=False, unique=True)
+    phone_number = db.Column('Phone_number', db.BigInteger, primary_key=True, nullable=False, unique=True)
     username = db.Column('UserName', db.Text, nullable=False)
     address = db.Column('Address', db.Text, nullable=False)
     postal_code = db.Column('Postal_code', db.Integer, nullable=False)
@@ -13,7 +13,7 @@ class User(db.Model):
 
 class Customer(db.Model):
     __tablename__ = 'Customer'
-    phone_c = db.Column('PhoneC', db.BigInteger, db.ForeignKey('User.Phone number'), primary_key=True, autoincrement=True)
+    phone_c = db.Column('PhoneC', db.BigInteger, db.ForeignKey('User.Phone_number'), primary_key=True, autoincrement=True)
     premium = db.Column(db.Boolean, nullable=False, default=False)
 
 class Provider(db.Model):
