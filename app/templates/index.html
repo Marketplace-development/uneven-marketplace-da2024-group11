@@ -21,7 +21,6 @@
                         </li>
                         <li class="nav-item">
                             <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
-                                {{ csrf_token() }}
                                 <button class="btn btn-danger btn-sm" type="submit" aria-label="Log out">Logout</button>
                             </form>
                         </li>
