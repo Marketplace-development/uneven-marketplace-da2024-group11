@@ -40,13 +40,14 @@ def login():
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # Haal gegevens uit het formulier
+        phone_number = request.form.get('phone_number')
         username = request.form.get('username')
-        email = request.form.get('email')
         address = request.form.get('address')
         postal_code = request.form.get('postal_code')
         city = request.form.get('city')
-        phone_number = request.form.get('phone_number')
+        email = request.form.get('email')
+        address = request.form.get('address')
+
 
         # Validatie
         errors = []
@@ -74,12 +75,12 @@ def register():
 
         # Voeg de gebruiker toe aan de database
         new_user = User(
-            username=username,
-            email=email,
-            address=address,
-            postal_code=int(postal_code),
-            city=city,
-            phone_number=phone_number
+            phone_number=phone_number,
+            username = username,
+            address = address,
+            postal_code = int(postal_code),
+            city = city,
+            email = email,
         )
         db.session.add(new_user)
         db.session.commit()
