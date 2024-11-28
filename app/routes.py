@@ -1,21 +1,21 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from app.models import db, User, Listing, Provider  # Toegevoegd 'Provider'
+from app.models import db, User, Listing, Transaction, Customer
 from app.services.popularity import calculate_popularity
 from app.services.pricing import dynamic_pricing_advanced
 from app.services.search import search_and_filter
 from app.services.recommendation import recommend_tools
+from datetime import datetime
 
 main = Blueprint('main', __name__)
-
 
 @main.route('/')
 def index():
     if 'phone_number' in session:
         user = User.query.filter_by(phone_number=session['phone_number']).first_or_404()
         listings = Listing.query.filter_by(provider_id=user.phone_number).all()
-        return render_template('index.html', username=user.username, listings=listings)
+        transactions = Transaction.query.filter_by(customer_phone=user.phone_number).all()
+        return render_template('index.html', username=user.username, listings=listings, transactions=transactions)
     return render_template('index.html')
-
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
@@ -46,8 +46,6 @@ def register():
         postal_code = request.form.get('postal_code')
         city = request.form.get('city')
         email = request.form.get('email')
-        address = request.form.get('address')
-
 
         # Validatie
         errors = []
@@ -110,7 +108,7 @@ def add_listing():
         product_code = request.form.get('product_code')
         price = request.form.get('price')
         availability = request.form.get('availability') == 'True'  # Boolean check
-        provider_phone_number = session['phone_number']
+        provider_id = session['phone_number']
 
         # Validatie
         errors = []
@@ -129,18 +127,8 @@ def add_listing():
             except ValueError:
                 errors.append("Invalid product code format.")
 
-        # Controleer of de provider bestaat, en voeg toe indien niet aanwezig (NIEUWE CODE)
-        provider = Provider.query.filter_by(providerp=provider_phone_number).first()
-        if not provider:
-            # Voeg de gebruiker toe als provider, aangezien hij of zij nog geen provider is (NIEUWE CODE)
-            new_provider = Provider(providerp=provider_phone_number, premium_provider=False)
-            db.session.add(new_provider)
-            db.session.commit()
-            provider = new_provider  # Update de provider variabele met de nieuw toegevoegde provider
-
-        # Debug: print alle fouten in de terminal
         if errors:
-            print(errors)  # Deze regel zorgt ervoor dat je de fouten kunt zien in de terminal
+            print(errors)  # Debug
             return render_template('add_listing.html', errors=errors)
 
         # Maak een nieuwe Listing aan
@@ -152,17 +140,16 @@ def add_listing():
             product_code=product_code,
             price_set_by_provider=price,
             availability=availability,
-            provider_id=provider.providerp  # Gebruik de geldige provider ID (GEWIJZIGDE CODE)
+            provider_id=provider_id
         )
-
-        # Voeg try-except toe om te zien of er iets misgaat met het opslaan van de gegevens
+        
         try:
             db.session.add(new_listing)
             db.session.commit()
             return redirect(url_for('main.listings'))
         except Exception as e:
-            db.session.rollback()  # Rollback bij een fout
-            print(f"Fout bij het toevoegen van de listing: {e}")  # Debug de fout in de terminal
+            db.session.rollback()
+            print(f"Fout bij het toevoegen van de listing: {e}")
             errors.append("Er is een fout opgetreden bij het toevoegen van de listing.")
             return render_template('add_listing.html', errors=errors)
 
@@ -170,8 +157,60 @@ def add_listing():
 
 @main.route('/listings')
 def listings():
-    all_listings = Listing.query.all()
+    all_listings = Listing.query.filter_by(availability=True).all()
     return render_template('listings.html', listings=all_listings)
+
+@main.route('/buy-listing/<int:listing_id>', methods=['GET', 'POST'])
+def buy_listing(listing_id):
+    if 'phone_number' not in session:
+        flash("You need to be logged in to buy a tool.", "error")
+        return redirect(url_for('main.login'))
+
+    listing = Listing.query.get_or_404(listing_id)
+
+    if not listing.availability:
+        flash("This tool is not available for purchase.", "error")
+        return redirect(url_for('main.listings'))
+
+    customer_phone = session['phone_number']
+    customer = Customer.query.filter_by(phone_c=customer_phone).first()
+    if not customer:
+        new_customer = Customer(phone_c=customer_phone, premium=False)
+        db.session.add(new_customer)
+        db.session.commit()
+        customer = new_customer
+
+    commission_fee = listing.price_set_by_provider * 0.05
+
+    new_transaction = Transaction(
+        listing_id=listing.listing_id,
+        provider_id=listing.provider_id,
+        customer_phone=customer.phone_c,
+        commission_fee=commission_fee,
+        date=datetime.now()
+    )
+
+    listing.availability = False
+
+    try:
+        db.session.add(new_transaction)
+        db.session.commit()
+        flash("You have successfully purchased this tool!", "success")
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error during transaction: {e}")
+        flash("There was an error processing your purchase.", "error")
+
+    return redirect(url_for('main.index'))
+
+@main.route('/your-transactions')
+def your_transactions():
+    if 'phone_number' not in session:
+        return redirect(url_for('main.login'))
+
+    customer_phone = session['phone_number']
+    transactions = Transaction.query.filter_by(customer_phone=customer_phone).all()
+    return render_template('your_transactions.html', transactions=transactions)
 
 @main.route('/popular-listings', methods=['GET'])
 def popular_listings():
@@ -228,5 +267,4 @@ def recommendations():
     user_id = session['phone_number']
     recommendations = recommend_tools(db.session, user_id)
     return render_template('recommendations.html', recommendations=recommendations)
-
 

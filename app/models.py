@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -35,11 +36,12 @@ class Listing(db.Model):
 
 class Transaction(db.Model):
     __tablename__ = 'Transactie'
-    listing_id = db.Column('listingID', db.BigInteger, db.ForeignKey('Listing.ListingID'), primary_key=True)
+    listing_id = db.Column('ListingID', db.BigInteger, db.ForeignKey('Listing.ListingID'), primary_key=True)
     provider_id = db.Column('ProviderP', db.BigInteger, db.ForeignKey('Provider.providerp'), primary_key=True)
     customer_phone = db.Column('PhoneC', db.BigInteger, db.ForeignKey('Customer.PhoneC'), primary_key=True)
-    commission_fee = db.Column('Commission fee', db.Float, nullable=True)
-    date = db.Column('Date', db.DateTime(timezone=True), nullable=True)
+    commission_fee = db.Column('Commission fee', db.Float, nullable=True)  # Kolomnaam aangepast aan database
+    date = db.Column('Date', db.DateTime(timezone=True), nullable=False, default=datetime.now)  # Kolomnaam aangepast naar 'Date'
+
 
 class Review(db.Model):
     __tablename__ = 'review'

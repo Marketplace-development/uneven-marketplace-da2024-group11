@@ -12,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         .container {
             max-width: 800px;
             margin: 50px auto;
@@ -20,17 +21,20 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+
         .listing-header {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .listing-image {
             max-width: 100%;
             height: auto;
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        .back-btn {
+
+        .btn-primary {
             display: inline-block;
             margin-top: 20px;
             background: linear-gradient(135deg, #2575fc, #6a11cb);
@@ -41,10 +45,27 @@
             border-radius: 30px;
             transition: all 0.3s ease;
         }
-        .back-btn:hover {
+
+        .btn-primary:hover {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             transform: translateY(-3px);
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: #ddd;
+            color: #333;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #ccc;
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -60,8 +81,12 @@
         <p><strong>Condition:</strong> {{ listing.condition }}</p>
         <p><strong>Price:</strong> ${{ "%.2f"|format(listing.price_set_by_provider) }}</p>
         <p><strong>Availability:</strong> {{ 'Available' if listing.availability else 'Not Available' }}</p>
+
+        {% if listing.availability %}
+            <a href="{{ url_for('main.buy_listing', listing_id=listing.listing_id) }}" class="btn-primary">Buy This Tool</a>
+        {% endif %}
+        
         <a href="{{ url_for('main.listings') }}" class="back-btn">Back to Listings</a>
     </div>
 </body>
 </html>
-

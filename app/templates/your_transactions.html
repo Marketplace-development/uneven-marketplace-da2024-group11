@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Transactions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .transaction {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .transaction:last-child {
+            border-bottom: none;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: #ddd;
+            color: #333;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #ccc;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Transactions</h1>
+        {% if transactions %}
+            {% for transaction in transactions %}
+                <div class="transaction">
+                    <p><strong>Tool Name:</strong> {{ transaction.listing.name_tool }}</p>
+                    <p><strong>Purchased From:</strong> {{ transaction.listing.provider.username }}</p>
+                    <p><strong>Date:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>You have no transactions yet.</p>
+        {% endif %}
+        <a href="{{ url_for('main.index') }}" class="back-btn">Back to Main Page</a>
+    </div>
+</body>
+</html>
