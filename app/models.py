@@ -18,7 +18,7 @@ class Customer(db.Model):
 
 class Provider(db.Model):
     __tablename__ = 'Provider'
-    providerp = db.Column(db.BigInteger, db.ForeignKey('User.Phone number'), primary_key=True, autoincrement=True)
+    providerp = db.Column(db.BigInteger, db.ForeignKey('User.Phone_number'), primary_key=True, autoincrement=True)
     premium_provider = db.Column('Premium Provider', db.Boolean, nullable=True, default=False)
 
 class Listing(db.Model):

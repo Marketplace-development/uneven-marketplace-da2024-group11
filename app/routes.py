@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from app.models import db, User, Listing
+from app.models import db, User, Listing, Provider  # Toegevoegd 'Provider'
 from app.services.popularity import calculate_popularity
 from app.services.pricing import dynamic_pricing_advanced
 from app.services.search import search_and_filter
@@ -76,11 +76,11 @@ def register():
         # Voeg de gebruiker toe aan de database
         new_user = User(
             phone_number=phone_number,
-            username = username,
-            address = address,
-            postal_code = int(postal_code),
-            city = city,
-            email = email,
+            username=username,
+            address=address,
+            postal_code=int(postal_code),
+            city=city,
+            email=email,
         )
         db.session.add(new_user)
         db.session.commit()
@@ -91,13 +91,10 @@ def register():
 
     return render_template('register.html')
 
-
-
 @main.route('/logout', methods=['POST'])
 def logout():
     session.clear()
     return redirect(url_for('main.index'))
-
 
 @main.route('/add-listing', methods=['GET', 'POST'])
 def add_listing():
@@ -113,7 +110,7 @@ def add_listing():
         product_code = request.form.get('product_code')
         price = request.form.get('price')
         availability = request.form.get('availability') == 'True'  # Boolean check
-        provider_id = session['phone_number']
+        provider_phone_number = session['phone_number']
 
         # Validatie
         errors = []
@@ -131,7 +128,19 @@ def add_listing():
                 product_code = int(product_code)
             except ValueError:
                 errors.append("Invalid product code format.")
+
+        # Controleer of de provider bestaat, en voeg toe indien niet aanwezig (NIEUWE CODE)
+        provider = Provider.query.filter_by(providerp=provider_phone_number).first()
+        if not provider:
+            # Voeg de gebruiker toe als provider, aangezien hij of zij nog geen provider is (NIEUWE CODE)
+            new_provider = Provider(providerp=provider_phone_number, premium_provider=False)
+            db.session.add(new_provider)
+            db.session.commit()
+            provider = new_provider  # Update de provider variabele met de nieuw toegevoegde provider
+
+        # Debug: print alle fouten in de terminal
         if errors:
+            print(errors)  # Deze regel zorgt ervoor dat je de fouten kunt zien in de terminal
             return render_template('add_listing.html', errors=errors)
 
         # Maak een nieuwe Listing aan
@@ -143,22 +152,26 @@ def add_listing():
             product_code=product_code,
             price_set_by_provider=price,
             availability=availability,
-            provider_id=provider_id
+            provider_id=provider.providerp  # Gebruik de geldige provider ID (GEWIJZIGDE CODE)
         )
-        db.session.add(new_listing)
-        db.session.commit()
 
-        return redirect(url_for('main.listings'))
+        # Voeg try-except toe om te zien of er iets misgaat met het opslaan van de gegevens
+        try:
+            db.session.add(new_listing)
+            db.session.commit()
+            return redirect(url_for('main.listings'))
+        except Exception as e:
+            db.session.rollback()  # Rollback bij een fout
+            print(f"Fout bij het toevoegen van de listing: {e}")  # Debug de fout in de terminal
+            errors.append("Er is een fout opgetreden bij het toevoegen van de listing.")
+            return render_template('add_listing.html', errors=errors)
 
     return render_template('add_listing.html')
-
-
 
 @main.route('/listings')
 def listings():
     all_listings = Listing.query.all()
     return render_template('listings.html', listings=all_listings)
-
 
 @main.route('/popular-listings', methods=['GET'])
 def popular_listings():
@@ -172,18 +185,15 @@ def popular_listings():
     } for row in results]
     return render_template('popular_listings.html', listings=listings)
 
-
 @main.route('/pricing', methods=['GET'])
 def pricing():
     pricing_data = dynamic_pricing_advanced(db.session)
     return render_template('pricing.html', pricing_data=pricing_data)
 
-
 @main.route('/listing/<int:id>')
 def listing_detail(id):
     listing = Listing.query.get_or_404(id)
     return render_template('listing_detail.html', listing=listing)
-
 
 @main.route('/search', methods=['GET', 'POST'])
 def search():
@@ -210,7 +220,6 @@ def search():
 
     return render_template('search.html')
 
-
 @main.route('/recommendations', methods=['GET'])
 def recommendations():
     if 'phone_number' not in session:
@@ -219,4 +228,5 @@ def recommendations():
     user_id = session['phone_number']
     recommendations = recommend_tools(db.session, user_id)
     return render_template('recommendations.html', recommendations=recommendations)
+
 
