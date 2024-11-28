@@ -108,10 +108,10 @@ def add_listing():
         listing_name = request.form.get('listing_name')
         brand = request.form.get('brand')
         condition = request.form.get('condition')
-        battery_included = request.form.get('battery_included') == 'on'
+        battery_included = request.form.get('battery_included') == 'True'  # Boolean check
         product_code = request.form.get('product_code')
         price = request.form.get('price')
-        availability = request.form.get('availability') == 'on'
+        availability = request.form.get('availability') == 'True'  # Boolean check
         provider_id = session['phone_number']
 
         # Validatie
@@ -150,6 +150,7 @@ def add_listing():
         return redirect(url_for('main.listings'))
 
     return render_template('add_listing.html')
+
 
 
 @main.route('/listings')
