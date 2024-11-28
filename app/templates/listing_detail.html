@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ listing.name_tool }} - Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .listing-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .listing-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="listing-header">
+            <h1>{{ listing.name_tool }}</h1>
+        </div>
+        {% if listing.image_path %}
+            <img src="{{ url_for('static', filename='uploads/' + listing.image_path.split('/')[-1]) }}" class="listing-image" alt="{{ listing.name_tool }}">
+        {% endif %}
+        <p><strong>Brand:</strong> {{ listing.brand }}</p>
+        <p><strong>Condition:</strong> {{ listing.condition }}</p>
+        <p><strong>Price:</strong> ${{ "%.2f"|format(listing.price_set_by_provider) }}</p>
+        <p><strong>Availability:</strong> {{ 'Available' if listing.availability else 'Not Available' }}</p>
+        <a href="{{ url_for('main.listings') }}" class="back-btn">Back to Listings</a>
+    </div>
+</body>
+</html>
+
