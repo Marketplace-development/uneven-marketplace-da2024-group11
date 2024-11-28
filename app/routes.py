@@ -37,10 +37,8 @@ def login():
 
     return render_template('login.html')
 
-
 @main.route('/register', methods=['GET', 'POST'])
 def register():
-    from models import User
     if request.method == 'POST':
         # Haal gegevens uit het formulier
         username = request.form.get('username')
@@ -63,10 +61,15 @@ def register():
         if errors:
             return render_template('register.html', errors=errors)
 
-        # Controleer of de gebruiker al bestaat
-        existing_user = User.query.filter_by(phone_number=phone_number).first()
-        if existing_user:
-            flash("User already exists with this phone number.", "error")
+        # Controleer of de gebruiker al bestaat op basis van e-mailadres of telefoonnummer
+        existing_user_by_email = User.query.filter_by(email=email).first()
+        if existing_user_by_email:
+            flash("An account with this email already exists.", "error")
+            return redirect(url_for('main.register'))
+
+        existing_user_by_phone = User.query.filter_by(phone_number=phone_number).first()
+        if existing_user_by_phone:
+            flash("An account with this phone number already exists.", "error")
             return redirect(url_for('main.register'))
 
         # Voeg de gebruiker toe aan de database
@@ -86,6 +89,7 @@ def register():
         return redirect(url_for('main.index'))
 
     return render_template('register.html')
+
 
 
 @main.route('/logout', methods=['POST'])
