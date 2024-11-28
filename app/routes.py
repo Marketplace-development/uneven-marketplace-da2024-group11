@@ -1,26 +1,48 @@
-from flask import Blueprint, request, redirect, url_for, render_template, session
+from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from app.models import db, User, Listing
 from app.services.popularity import calculate_popularity
 from app.services.pricing import dynamic_pricing_advanced
 from app.services.search import search_and_filter
 from app.services.recommendation import recommend_tools
-from .forms import LoginForm
+
 main = Blueprint('main', __name__)
+
 
 @main.route('/')
 def index():
-    loginform=LoginForm()
-    if 'user_id' in session:
-        user = User.query.get_or_404(session['user_id'])
-        listings = Listing.query.filter_by(ProviderID=user.Phone_number).all()  # Zorg ervoor dat 'ProviderID' correct is
-        return render_template('index.html', username=user.UserName, listings=listings)
-    return render_template('index.html', form=loginform)
+    if 'phone_number' in session:
+        user = User.query.filter_by(phone_number=session['phone_number']).first_or_404()
+        listings = Listing.query.filter_by(provider_id=user.phone_number).all()
+        return render_template('index.html', username=user.username, listings=listings)
+    return render_template('index.html')
+
+
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        phone_number = request.form.get('phone_number')
+
+        # Validatie van het telefoonnummer
+        if not phone_number:
+            flash("Phone number is required.", "error")
+            return redirect(url_for('main.login'))
+
+        user = User.query.filter_by(phone_number=phone_number).first()
+        if not user:
+            flash("Invalid phone number.", "error")
+            return redirect(url_for('main.login'))
+
+        session['phone_number'] = user.phone_number
+        return redirect(url_for('main.index'))
+
+    return render_template('login.html')
 
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
+    from models import User
     if request.method == 'POST':
-        # Haal gegevens op uit het formulier
+        # Haal gegevens uit het formulier
         username = request.form.get('username')
         email = request.form.get('email')
         address = request.form.get('address')
@@ -28,43 +50,48 @@ def register():
         city = request.form.get('city')
         phone_number = request.form.get('phone_number')
 
-        # Controleer of de gebruiker al bestaat
-        existing_user = User.query.filter_by(userName=username).first()
-        if existing_user:
-            return 'Username already registered', 400
+        # Validatie
+        errors = []
+        if not username:
+            errors.append("Username is required.")
+        if not email:
+            errors.append("Email is required.")
+        if not phone_number:
+            errors.append("Phone number is required.")
+        if not postal_code or not postal_code.isdigit():
+            errors.append("Postal code is invalid.")
+        if errors:
+            return render_template('register.html', errors=errors)
 
-        # Maak een nieuwe gebruiker aan
+        # Controleer of de gebruiker al bestaat
+        existing_user = User.query.filter_by(phone_number=phone_number).first()
+        if existing_user:
+            flash("User already exists with this phone number.", "error")
+            return redirect(url_for('main.register'))
+
+        # Voeg de gebruiker toe aan de database
         new_user = User(
-            UserName=username,
-            Email=email,
-            Address=address,
-            Postal_code=postal_code,
-            City=city,
-            Phone_number=phone_number
+            username=username,
+            email=email,
+            address=address,
+            postal_code=int(postal_code),
+            city=city,
+            phone_number=phone_number
         )
         db.session.add(new_user)
         db.session.commit()
 
-        # Sla de gebruiker op in de sessie
+        # Bewaar de gebruiker in de sessie
         session['phone_number'] = new_user.phone_number
         return redirect(url_for('main.index'))
 
     return render_template('register.html')
 
-@main.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        phone_number = request.form.get('phone_number')
 
-        user = User.query.filter_by(Phone_number=phone_number).first()
-        if not user:
-            return 'Invalid phone number', 404
-
-        # Log de gebruiker in door de sessie bij te werken
-        session['phone_number'] = user.Phone_number
-        return redirect(url_for('main.index'))
-
-    return render_template('login.html')
+@main.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return redirect(url_for('main.index'))
 
 
 @main.route('/add-listing', methods=['GET', 'POST'])
@@ -81,9 +108,9 @@ def add_listing():
         product_code = request.form.get('product_code')
         price = request.form.get('price')
         availability = request.form.get('availability') == 'on'
-        provider_id = session['user_id']
+        provider_id = session['phone_number']
 
-        # Validatie van inputs
+        # Validatie
         errors = []
         if not listing_name:
             errors.append("Listing name is required.")
@@ -99,20 +126,19 @@ def add_listing():
                 product_code = int(product_code)
             except ValueError:
                 errors.append("Invalid product code format.")
-
         if errors:
             return render_template('add_listing.html', errors=errors)
 
         # Maak een nieuwe Listing aan
         new_listing = Listing(
-            NameTool=listing_name,
-            Brand=brand,
-            Condition=condition,
-            BatteryIncluded=battery_included,
-            ProductCode=product_code,
-            PriceSetByProvider=price,
-            Availability=availability,
-            ProviderID=provider_id
+            name_tool=listing_name,
+            brand=brand,
+            condition=condition,
+            battery_included=battery_included,
+            product_code=product_code,
+            price_set_by_provider=price,
+            availability=availability,
+            provider_id=provider_id
         )
         db.session.add(new_listing)
         db.session.commit()
@@ -127,6 +153,7 @@ def listings():
     all_listings = Listing.query.all()
     return render_template('listings.html', listings=all_listings)
 
+
 @main.route('/popular-listings', methods=['GET'])
 def popular_listings():
     results = calculate_popularity(db.session)
@@ -138,6 +165,7 @@ def popular_listings():
         "PopularityScore": row[4]
     } for row in results]
     return render_template('popular_listings.html', listings=listings)
+
 
 @main.route('/pricing', methods=['GET'])
 def pricing():
@@ -156,7 +184,8 @@ def search():
     if request.method == 'POST':
         search_term = request.form.get('search_term', '').strip()
         if not search_term:
-            return 'Search term is required.', 400
+            flash("Search term is required.", "error")
+            return redirect(url_for('main.search'))
 
         price_range = (
             float(request.form.get('min_price', 0)),
@@ -181,6 +210,7 @@ def recommendations():
     if 'phone_number' not in session:
         return redirect(url_for('main.login'))
 
-    user_id = session['uphone_number']
+    user_id = session['phone_number']
     recommendations = recommend_tools(db.session, user_id)
     return render_template('recommendations.html', recommendations=recommendations)
+
