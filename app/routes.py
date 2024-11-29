@@ -5,6 +5,7 @@ from app.services.pricing import dynamic_pricing_advanced
 from app.services.search import search_and_filter
 from app.services.recommendation import recommend_tools
 from datetime import datetime
+from decimal import Decimal
 
 main = Blueprint('main', __name__)
 
@@ -166,12 +167,14 @@ def buy_listing(listing_id):
         flash("You need to be logged in to buy a tool.", "error")
         return redirect(url_for('main.login'))
 
+    # Fetch the listing
     listing = Listing.query.get_or_404(listing_id)
 
     if not listing.availability:
         flash("This tool is not available for purchase.", "error")
         return redirect(url_for('main.listings'))
 
+    # Ensure customer exists in the database
     customer_phone = session['phone_number']
     customer = Customer.query.filter_by(phone_c=customer_phone).first()
     if not customer:
@@ -180,8 +183,10 @@ def buy_listing(listing_id):
         db.session.commit()
         customer = new_customer
 
-    commission_fee = listing.price_set_by_provider * 0.05
+    # Calculate the commission fee using Decimal
+    commission_fee = listing.price_set_by_provider * Decimal('0.05')
 
+    # Create a new transaction
     new_transaction = Transaction(
         listing_id=listing.listing_id,
         provider_id=listing.provider_id,
@@ -190,8 +195,10 @@ def buy_listing(listing_id):
         date=datetime.now()
     )
 
+    # Mark the listing as unavailable
     listing.availability = False
 
+    # Commit the transaction
     try:
         db.session.add(new_transaction)
         db.session.commit()
@@ -202,6 +209,7 @@ def buy_listing(listing_id):
         flash("There was an error processing your purchase.", "error")
 
     return redirect(url_for('main.index'))
+
 
 @main.route('/your-transactions')
 def your_transactions():

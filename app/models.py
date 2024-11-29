@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
@@ -33,6 +34,7 @@ class Listing(db.Model):
     price_set_by_provider = db.Column('PriceSetByProvider', db.Numeric, nullable=True)
     availability = db.Column('Availability', db.Boolean, nullable=True)
     provider_id = db.Column('ProviderID', db.BigInteger, db.ForeignKey('Provider.providerp'), nullable=False)
+    transactions = db.relationship('Transaction', back_populates='listing')
 
 class Transaction(db.Model):
     __tablename__ = 'Transactie'
@@ -40,8 +42,9 @@ class Transaction(db.Model):
     provider_id = db.Column('ProviderP', db.BigInteger, db.ForeignKey('Provider.providerp'), primary_key=True)
     customer_phone = db.Column('PhoneC', db.BigInteger, db.ForeignKey('Customer.PhoneC'), primary_key=True)
     commission_fee = db.Column('Commission fee', db.Float, nullable=True)  # Kolomnaam aangepast aan database
-    date = db.Column('Date', db.DateTime(timezone=True), nullable=False, default=datetime.now)  # Kolomnaam aangepast naar 'Date'
-
+    date = db.Column('Date', db.DateTime(timezone=True), nullable=False, server_default=func.now())  # Kolomnaam aangepast naar 'Date'
+    status = db.Column(db.String(20), nullable=False, default='Pending') #dit heb ik laten staan voor de cancelbutton
+    listing = db.relationship('Listing', back_populates='transactions')
 
 class Review(db.Model):
     __tablename__ = 'review'
