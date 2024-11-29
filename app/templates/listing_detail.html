@@ -44,6 +44,8 @@
             padding: 10px 20px;
             border-radius: 30px;
             transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-primary:hover {
@@ -83,7 +85,9 @@
         <p><strong>Availability:</strong> {{ 'Available' if listing.availability else 'Not Available' }}</p>
 
         {% if listing.availability %}
-            <a href="{{ url_for('main.buy_listing', listing_id=listing.listing_id) }}" class="btn-primary">Buy This Tool</a>
+            <form action="{{ url_for('main.buy_listing', listing_id=listing.listing_id) }}" method="post">
+                <button type="submit" class="btn-primary">Buy This Tool</button>
+            </form>
         {% endif %}
         
         <a href="{{ url_for('main.listings') }}" class="back-btn">Back to Listings</a>

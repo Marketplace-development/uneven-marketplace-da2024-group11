@@ -161,7 +161,7 @@ def listings():
     all_listings = Listing.query.filter_by(availability=True).all()
     return render_template('listings.html', listings=all_listings)
 
-@main.route('/buy-listing/<int:listing_id>', methods=['GET', 'POST'])
+@main.route('/buy-listing/<int:listing_id>', methods=['POST'])
 def buy_listing(listing_id):
     if 'phone_number' not in session:
         flash("You need to be logged in to buy a tool.", "error")
@@ -207,6 +207,7 @@ def buy_listing(listing_id):
         db.session.rollback()
         print(f"Error during transaction: {e}")
         flash("There was an error processing your purchase.", "error")
+        return redirect(url_for('main.listings'))
 
     return redirect(url_for('main.index'))
 
@@ -276,3 +277,41 @@ def recommendations():
     recommendations = recommend_tools(db.session, user_id)
     return render_template('recommendations.html', recommendations=recommendations)
 
+
+@main.route('/profile')
+def profile():
+    if 'phone_number' not in session:
+        return redirect(url_for('main.login'))
+    
+    user = User.query.filter_by(phone_number=session['phone_number']).first_or_404()
+    transactions = Transaction.query.filter_by(customer_phone=user.phone_number).all()
+    return render_template('profile.html', user=user, transactions=transactions)
+
+
+@main.route('/make-available-again/<int:listing_id>', methods=['POST'])
+def make_available_again(listing_id):
+    if 'phone_number' not in session:
+        return redirect(url_for('main.login'))
+
+    # Haal de listing op die weer beschikbaar moet worden gemaakt
+    listing = Listing.query.get_or_404(listing_id)
+
+    # Controleer of de ingelogde gebruiker de koper van de listing is
+    customer_phone = session['phone_number']
+    transaction = Transaction.query.filter_by(listing_id=listing.listing_id, customer_phone=customer_phone).first()
+    
+    if not transaction:
+        flash("You are not authorized to make this listing available.", "error")
+        return redirect(url_for('main.index'))
+
+    # Zet de listing weer op beschikbaar
+    listing.availability = True
+
+    try:
+        db.session.commit()
+        flash("The tool is now available again!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("There was an error making the tool available again.", "error")
+
+    return redirect(url_for('main.index'))

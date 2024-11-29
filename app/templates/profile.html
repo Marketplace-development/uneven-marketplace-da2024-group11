@@ -4,28 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Dashboard - EasyTools</title>
+    <title>Profile - EasyTools</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">EasyTools</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">EasyTools</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {% if username %}
+                    {% if user %}
                         <li class="nav-item">
-                            <span class="nav-link">Welcome, {{ username }}!</span>
+                            <span class="nav-link">Welcome, {{ user.username }}!</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.profile') }}">Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
-                                <button class="btn btn-danger btn-sm" type="submit" aria-label="Log out">Logout</button>
-                            </form>
+                            <a href="{{ url_for('main.logout') }}" class="btn btn-danger btn-sm">Logout</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -41,43 +36,27 @@
     </nav>
 
     <div class="container mt-5">
-        {% if username %}
+        {% if user %}
             <div class="row">
                 <div class="col-md-6">
-                    <h2>Your Listings</h2>
-                    {% if listings %}
-                        <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary mb-3">Add Listing</a>
-                        <ul class="list-group">
-                            {% for listing in listings %}
-                                <li class="list-group-item">
-                                    {{ listing.name_tool }} - ${{ "%.2f"|format(listing.price_set_by_provider) }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No listings available. <a href="{{ url_for('main.add_listing') }}">Add your first listing</a>.</p>
-                    {% endif %}
+                    <h2>Your Profile Information</h2>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+                        <li class="list-group-item"><strong>Phone Number:</strong> {{ user.phone_number }}</li>
+                        <li class="list-group-item"><strong>Address:</strong> {{ user.address }}</li>
+                        <li class="list-group-item"><strong>Postal Code:</strong> {{ user.postal_code }}</li>
+                        <li class="list-group-item"><strong>City:</strong> {{ user.city }}</li>
+                        <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                    </ul>
                 </div>
-
                 <div class="col-md-6">
-                    <h2>All Listings</h2>
-                    <a href="{{ url_for('main.listings') }}" class="btn btn-info">View All Listings</a>
-                </div>
-            </div>
-
-            <!-- Nieuwe sectie voor jouw gehuurde tools -->
-            <div class="row mt-5">
-                <div class="col-md-12">
-                    <h2>Your Rented Tools</h2>
+                    <h2>Your Transactions</h2>
                     {% if transactions %}
                         <ul class="list-group">
                             {% for transaction in transactions %}
                                 <li class="list-group-item">
                                     <strong>Tool Name:</strong> {{ transaction.listing.name_tool }}<br>
                                     <strong>Purchased On:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}
-                                    <form action="{{ url_for('main.make_available_again', listing_id=transaction.listing_id) }}" method="post" class="d-inline float-end">
-                                        <button class="btn btn-warning btn-sm" type="submit">Make Available Again</button>
-                                    </form>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -86,8 +65,6 @@
                     {% endif %}
                 </div>
             </div>
-            <!-- Einde nieuwe sectie voor jouw gehuurde tools -->
-
         {% else %}
             <div class="text-center">
                 <h1>Welcome to EasyTools!</h1>
@@ -105,3 +82,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
