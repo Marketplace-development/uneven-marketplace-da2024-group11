@@ -298,11 +298,6 @@ def profile():
         reviews = user.provider.reviews
 
     return render_template('profile.html', user=user, transactions=transactions, reviews=reviews)
-@main.route('/provider/<int:provider_id>')
-def provider_profile(provider_id):
-    provider = Provider.query.get_or_404(provider_id)
-    reviews = provider.reviews
-    return render_template('provider_profile.html', provider=provider, reviews=reviews)
 
 
 
