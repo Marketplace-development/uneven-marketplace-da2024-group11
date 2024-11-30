@@ -170,6 +170,11 @@ def buy_listing(listing_id):
     # Fetch the listing
     listing = Listing.query.get_or_404(listing_id)
 
+    # Check if the user is trying to buy their own product
+    if listing.provider_id == session['phone_number']:
+        flash("You cannot buy your own product.", "error")
+        return redirect(url_for('main.listings'))
+
     if not listing.availability:
         flash("This tool is not available for purchase.", "error")
         return redirect(url_for('main.listings'))
@@ -210,6 +215,7 @@ def buy_listing(listing_id):
         return redirect(url_for('main.listings'))
 
     return redirect(url_for('main.index'))
+
 
 
 @main.route('/your-transactions')
@@ -288,30 +294,37 @@ def profile():
     return render_template('profile.html', user=user, transactions=transactions)
 
 
-@main.route('/make-available-again/<int:listing_id>', methods=['POST'])
+@main.route('/return-rented-tool/<int:listing_id>', methods=['POST'])
 def make_available_again(listing_id):
     if 'phone_number' not in session:
+        flash("You need to be logged in to return a rented tool.", "error")
         return redirect(url_for('main.login'))
 
-    # Haal de listing op die weer beschikbaar moet worden gemaakt
+    # Get the listing being returned
     listing = Listing.query.get_or_404(listing_id)
 
-    # Controleer of de ingelogde gebruiker de koper van de listing is
+    # Ensure the user is the one who rented the tool
     customer_phone = session['phone_number']
     transaction = Transaction.query.filter_by(listing_id=listing.listing_id, customer_phone=customer_phone).first()
     
     if not transaction:
-        flash("You are not authorized to make this listing available.", "error")
+        flash("You are not authorized to return this tool.", "error")
         return redirect(url_for('main.index'))
 
-    # Zet de listing weer op beschikbaar
+    # Mark the listing as available again
     listing.availability = True
+
+    # Optionally, remove or update the transaction if needed
+    db.session.delete(transaction)  # Uncomment if you want to delete the transaction.
 
     try:
         db.session.commit()
-        flash("The tool is now available again!", "success")
+        flash("You have successfully returned the tool!", "success")
     except Exception as e:
         db.session.rollback()
-        flash("There was an error making the tool available again.", "error")
+        flash("There was an error returning the tool.", "error")
 
     return redirect(url_for('main.index'))
+
+
+

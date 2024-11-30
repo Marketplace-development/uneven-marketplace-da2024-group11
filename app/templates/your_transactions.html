@@ -46,6 +46,22 @@
             background: #ccc;
             transform: translateY(-2px);
         }
+
+        .return-btn {
+            margin-top: 10px;
+            background-color: #ff6347;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .return-btn:hover {
+            background-color: #e55347;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -57,6 +73,13 @@
                     <p><strong>Tool Name:</strong> {{ transaction.listing.name_tool }}</p>
                     <p><strong>Purchased From:</strong> {{ transaction.listing.provider.username }}</p>
                     <p><strong>Date:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    
+                    {% if not transaction.listing.availability %}
+                        <!-- Display "Return" button if the tool is rented -->
+                        <form action="{{ url_for('main.return_rented_tool', listing_id=transaction.listing.listing_id) }}" method="POST">
+                            <button type="submit" class="return-btn">Return Rented Tool</button>
+                        </form>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}

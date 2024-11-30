@@ -43,7 +43,6 @@ class Transaction(db.Model):
     customer_phone = db.Column('PhoneC', db.BigInteger, db.ForeignKey('Customer.PhoneC'), primary_key=True)
     commission_fee = db.Column('Commission fee', db.Float, nullable=True)  # Kolomnaam aangepast aan database
     date = db.Column('Date', db.DateTime(timezone=True), nullable=False, server_default=func.now())  # Kolomnaam aangepast naar 'Date'
-    status = db.Column(db.String(20), nullable=False, default='Pending') #dit heb ik laten staan voor de cancelbutton
     listing = db.relationship('Listing', back_populates='transactions')
 
 class Review(db.Model):
