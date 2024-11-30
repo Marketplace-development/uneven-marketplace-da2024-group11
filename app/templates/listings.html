@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Listings</title>
+    <title>All products</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -106,7 +106,7 @@
     <div class="container">
         <!-- Fancy knop toegevoegd om terug te keren naar de main pagina -->
         <div class="header">
-            <h1>All Listings</h1>
+            <h1>All products</h1>
             <a href="{{ url_for('main.index') }}" class="fancy-btn">EasyTools</a>
         </div>
 
@@ -128,7 +128,7 @@
             </div>
         {% else %}
             <div class="alert alert-info text-center mt-4" role="alert">
-                No listings available.
+                No products available.
             </div>
         {% endif %}
     </div>

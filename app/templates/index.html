@@ -44,9 +44,9 @@
         {% if username %}
             <div class="row">
                 <div class="col-md-6">
-                    <h2>Your Listings</h2>
+                    <h2>Your products</h2>
                     {% if listings %}
-                        <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary mb-3">Add Listing</a>
+                        <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary mb-3">Add products</a>
                         <ul class="list-group">
                             {% for listing in listings %}
                                 <li class="list-group-item">
@@ -55,13 +55,13 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p>No listings available. <a href="{{ url_for('main.add_listing') }}">Add your first listing</a>.</p>
+                        <p>No products available. <a href="{{ url_for('main.add_listing') }}">Add your first product</a>.</p>
                     {% endif %}
                 </div>
 
                 <div class="col-md-6">
-                    <h2>All Listings</h2>
-                    <a href="{{ url_for('main.listings') }}" class="btn btn-info">View All Listings</a>
+                    <h2>All products</h2>
+                    <a href="{{ url_for('main.listings') }}" class="btn btn-info">View All Products</a>
                 </div>
             </div>
 
