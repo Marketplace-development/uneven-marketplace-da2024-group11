@@ -44,9 +44,9 @@
         {% if username %}
             <div class="row">
                 <div class="col-md-6">
-                    <h2>Your products</h2>
+                    <h2>Your Products</h2>
                     {% if listings %}
-                        <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary mb-3">Add products</a>
+                        <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary mb-3">Add Products</a>
                         <ul class="list-group">
                             {% for listing in listings %}
                                 <li class="list-group-item">
@@ -60,33 +60,41 @@
                 </div>
 
                 <div class="col-md-6">
-                    <h2>All products</h2>
+                    <h2>All Products</h2>
                     <a href="{{ url_for('main.listings') }}" class="btn btn-info">View All Products</a>
                 </div>
             </div>
 
-            <!-- Nieuwe sectie voor jouw gehuurde tools -->
+            <!-- Section for Your Rented Tools -->
             <div class="row mt-5">
                 <div class="col-md-12">
                     <h2>Your Rented Tools</h2>
                     {% if transactions %}
                         <ul class="list-group">
                             {% for transaction in transactions %}
-                                <li class="list-group-item">
-                                    <strong>Tool Name:</strong> {{ transaction.listing.name_tool }}<br>
-                                    <strong>Purchased On:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}
-                                    <form action="{{ url_for('main.make_available_again', listing_id=transaction.listing_id) }}" method="post" class="d-inline float-end">
-                                        <button class="btn btn-warning btn-sm" type="submit">Make Available Again</button>
-                                    </form>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <strong>Tool Name:</strong> {{ transaction.listing.name_tool }}<br>
+                                        <strong>Purchased On:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}
+                                    </span>
+                                    <div>
+                                        <!-- Make Available Again Button -->
+                                        <form action="{{ url_for('main.make_available_again', listing_id=transaction.listing_id) }}" method="post" class="d-inline">
+                                            <button class="btn btn-warning btn-sm" type="submit">Make Available Again</button>
+                                        </form>
+
+                                        <!-- Write Review Button -->
+                                        <a href="{{ url_for('main.write_review', provider_id=transaction.provider_id) }}" class="btn btn-danger btn-sm ms-2">Write Review</a>
+                                    </div>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p>You have no transactions yet.</p>
+                        <p class="text-muted">You have no transactions yet.</p>
                     {% endif %}
                 </div>
             </div>
-            <!-- Einde nieuwe sectie voor jouw gehuurde tools -->
+            <!-- End of Section for Your Rented Tools -->
 
         {% else %}
             <div class="text-center">
@@ -99,7 +107,7 @@
     </div>
 
     <footer class="text-center mt-5 py-3 bg-light">
-        <p>&copy; 2024 EasyTools. All Rights Reserved.</p>
+        <p>&copy; {{ datetime.now().year }} EasyTools. All Rights Reserved.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

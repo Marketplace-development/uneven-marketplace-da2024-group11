@@ -22,6 +22,7 @@ class Provider(db.Model):
     __tablename__ = 'Provider'
     providerp = db.Column(db.BigInteger, db.ForeignKey('User.Phone_number'), primary_key=True, autoincrement=True)
     premium_provider = db.Column('Premium Provider', db.Boolean, nullable=True, default=False)
+    reviews = db.relationship('Review', back_populates='provider', cascade='all, delete-orphan')
 
 class Listing(db.Model):
     __tablename__ = 'Listing'
@@ -47,8 +48,11 @@ class Transaction(db.Model):
 
 class Review(db.Model):
     __tablename__ = 'review'
-    review_id = db.Column('ReviewID', db.BigInteger, primary_key=True, autoincrement=True)
-    customer_id = db.Column('CustomerID', db.BigInteger, db.ForeignKey('Customer.PhoneC'), nullable=True)
-    rating = db.Column('Rating', db.SmallInteger, nullable=True)
-    comment = db.Column('Comment', db.Text, nullable=True)
-    date = db.Column('date', db.DateTime(timezone=True), nullable=True)
+    review_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    customer_id = db.Column(db.BigInteger, db.ForeignKey('Customer.PhoneC'), nullable=True)
+    provider_id = db.Column(db.BigInteger, db.ForeignKey('Provider.providerp'), nullable=False)
+    rating = db.Column(db.SmallInteger, nullable=False)
+    comment = db.Column(db.Text, nullable=False)
+    date = db.Column(db.DateTime(timezone=True), default=datetime.now)
+
+    provider = db.relationship('Provider', back_populates='reviews')

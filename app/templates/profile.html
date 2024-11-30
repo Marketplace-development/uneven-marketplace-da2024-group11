@@ -38,6 +38,7 @@
     <div class="container mt-5">
         {% if user %}
             <div class="row">
+                <!-- Profile Information -->
                 <div class="col-md-6">
                     <h2>Your Profile Information</h2>
                     <ul class="list-group">
@@ -49,6 +50,8 @@
                         <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
                     </ul>
                 </div>
+
+                <!-- Transactions -->
                 <div class="col-md-6">
                     <h2>Your Transactions</h2>
                     {% if transactions %}
@@ -65,7 +68,28 @@
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Reviews Section -->
+            <div class="row mt-5">
+                <div class="col-md-12">
+                    <h2>Reviews</h2>
+                    {% if user.reviews %}
+                        <ul class="list-group">
+                            {% for review in user.reviews %}
+                                <li class="list-group-item">
+                                    <strong>Rating:</strong> {{ review.rating }}/5<br>
+                                    <strong>Comment:</strong> {{ review.comment }}<br>
+                                    <strong>Written On:</strong> {{ review.date.strftime('%Y-%m-%d %H:%M:%S') }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No reviews yet.</p>
+                    {% endif %}
+                </div>
+            </div>
         {% else %}
+            <!-- Not Logged In -->
             <div class="text-center">
                 <h1>Welcome to EasyTools!</h1>
                 <p>You are not logged in.</p>
@@ -76,10 +100,9 @@
     </div>
 
     <footer class="text-center mt-5 py-3 bg-light">
-        <p>&copy; 2024 EasyTools. All Rights Reserved.</p>
+        <p>&copy; {{ datetime.now().year }} EasyTools. All Rights Reserved.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

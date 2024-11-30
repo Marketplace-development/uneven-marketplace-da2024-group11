@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
-from app.models import db, User, Listing, Transaction, Customer
+from app.models import db, User, Listing, Transaction, Customer, Provider, Review
 from app.services.popularity import calculate_popularity
 from app.services.pricing import dynamic_pricing_advanced
 from app.services.search import search_and_filter
@@ -288,10 +288,16 @@ def recommendations():
 def profile():
     if 'phone_number' not in session:
         return redirect(url_for('main.login'))
-    
+
     user = User.query.filter_by(phone_number=session['phone_number']).first_or_404()
     transactions = Transaction.query.filter_by(customer_phone=user.phone_number).all()
-    return render_template('profile.html', user=user, transactions=transactions)
+
+    # Fetch reviews if the user is also a provider
+    reviews = None
+    if hasattr(user, 'provider'):
+        reviews = user.provider.reviews
+
+    return render_template('profile.html', user=user, transactions=transactions, reviews=reviews)
 
 
 @main.route('/return-rented-tool/<int:listing_id>', methods=['POST'])
@@ -326,5 +332,56 @@ def make_available_again(listing_id):
 
     return redirect(url_for('main.index'))
 
+@main.route('/write-review/<int:provider_id>', methods=['GET', 'POST'])
+def write_review(provider_id):
+    if 'phone_number' not in session:
+        flash("You need to log in to write a review.", "error")
+        return redirect(url_for('main.login'))
+
+    provider = Provider.query.get_or_404(provider_id)
+
+    # Ensure the user has completed a transaction with this provider
+    transaction = Transaction.query.filter_by(
+        provider_id=provider_id,
+        customer_phone=session['phone_number']
+    ).first()
+
+    if not transaction:
+        flash("You cannot review a provider without a completed transaction.", "error")
+        return redirect(url_for('main.index'))
+
+    if request.method == 'POST':
+        rating = request.form.get('rating')
+        comment = request.form.get('comment')
+
+        # Validate rating
+        if not rating or not rating.isdigit() or int(rating) < 1 or int(rating) > 5:
+            flash("Rating must be a number between 1 and 5.", "error")
+            return render_template('write_review.html', provider=provider)
+
+        # Create a new review
+        new_review = Review(
+            customer_id=session['phone_number'],
+            provider_id=provider_id,
+            rating=int(rating),
+            comment=comment,
+            date=datetime.now()
+        )
+
+        try:
+            db.session.add(new_review)
+            db.session.commit()
+            flash("Thank you for your review!", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occurred while submitting your review.", "error")
+            print(f"Error: {e}")
+
+        return redirect(url_for('main.profile'))
+
+    return render_template('write_review.html', provider=provider)
+@main.context_processor
+def inject_datetime():
+    return {'datetime': datetime}
 
 
