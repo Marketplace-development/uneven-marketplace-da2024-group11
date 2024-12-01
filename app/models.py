@@ -43,7 +43,7 @@ class Transaction(db.Model):
     provider_id = db.Column('ProviderP', db.BigInteger, db.ForeignKey('Provider.providerp'), primary_key=True)
     customer_phone = db.Column('PhoneC', db.BigInteger, db.ForeignKey('Customer.PhoneC'), primary_key=True)
     commission_fee = db.Column('Commission fee', db.Float, nullable=True)  # Kolomnaam aangepast aan database
-    date = db.Column('Date', db.DateTime(timezone=True), nullable=False, server_default=func.now())  # Kolomnaam aangepast naar 'Date'
+    date = db.Column('Date', db.DateTime(timezone=True), nullable=False, server_default=func.now(), primary_key=True)  # Kolomnaam aangepast naar 'Date'
     listing = db.relationship('Listing', back_populates='transactions')
 
 class Review(db.Model):
