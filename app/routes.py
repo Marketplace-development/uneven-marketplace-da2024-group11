@@ -334,23 +334,18 @@ def make_available_again(listing_id):
 
     return redirect(url_for('main.index'))
 
-@main.route('/write-review/<int:provider_id>', methods=['GET', 'POST'])
-def write_review(provider_id):
+@main.route('/add-review/<int:listing_id>', methods=['GET', 'POST'])
+def add_review(listing_id):
     if 'phone_number' not in session:
-        flash("You need to log in to write a review.", "error")
+        flash("You need to be logged in to leave a review.", "error")
         return redirect(url_for('main.login'))
 
-    provider = Provider.query.get_or_404(provider_id)
-
-    # Ensure the user has completed a transaction with this provider
-    transaction = Transaction.query.filter_by(
-        provider_id=provider_id,
-        customer_phone=session['phone_number']
-    ).first()
-
-    if not transaction:
-        flash("You cannot review a provider without a completed transaction.", "error")
-        return redirect(url_for('main.index'))
+    listing = Listing.query.get_or_404(listing_id)
+    customer_phone = session['phone_number']
+    customer = Customer.query.filter_by(phone_c=customer_phone).first()
+    if not customer:
+        flash("Only customers can leave reviews.", "error")
+        return redirect(url_for('main.listings'))
 
     if request.method == 'POST':
         rating = request.form.get('rating')
@@ -359,12 +354,12 @@ def write_review(provider_id):
         # Validate rating
         if not rating or not rating.isdigit() or int(rating) < 1 or int(rating) > 5:
             flash("Rating must be a number between 1 and 5.", "error")
-            return render_template('write_review.html', provider=provider)
+            return render_template('add_review.html', listing=listing)
 
-        # Create a new review
+        # Create new review
         new_review = Review(
-            customer_id=session['phone_number'],
-            provider_id=provider_id,
+            customer_id=customer.phone_c,
+            listing_id=listing.listing_id,
             rating=int(rating),
             comment=comment,
             date=datetime.now()
@@ -373,15 +368,14 @@ def write_review(provider_id):
         try:
             db.session.add(new_review)
             db.session.commit()
-            flash("Thank you for your review!", "success")
+            flash("Review added successfully!", "success")
+            return redirect(url_for('main.listing_detail', id=listing.listing_id))
         except Exception as e:
             db.session.rollback()
-            flash("An error occurred while submitting your review.", "error")
-            print(f"Error: {e}")
+            flash("An error occurred while adding the review.", "error")
 
-        return redirect(url_for('main.profile'))
+    return render_template('add_review.html', listing=listing)
 
-    return render_template('write_review.html', provider=provider)
 @main.context_processor
 def inject_datetime():
     return {'datetime': datetime}

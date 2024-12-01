@@ -1,0 +1,63 @@
+"""
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Leave a Review for {{ listing.name_tool }}</h2>
+    <form method="POST">
+      <div class="form-group">
+        <label for="rating">Rating (out of 5):</label>
+        <div id="star-rating" class="mb-2">
+          <span class="star" data-value="1">&#9733;</span>
+          <span class="star" data-value="2">&#9733;</span>
+          <span class="star" data-value="3">&#9733;</span>
+          <span class="star" data-value="4">&#9733;</span>
+          <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <input type="hidden" id="rating" name="rating">
+        <div class="d-flex justify-content-between mt-2">
+          <span id="rating-feedback" class="text-muted">Select a rating</span>
+        </div>
+      </div>
+      <div class="form-group mt-4">
+        <label for="comment">Comment (optional):</label>
+        <textarea class="form-control" id="comment" name="comment" rows="5" placeholder="What did you like or dislike? Please share your experience..." style="resize: vertical;" maxlength="500"></textarea>
+        <small id="charCount" class="form-text text-muted">0 / 500 characters used</small>
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-3">Submit Review</button>
+    </form>
+  </div>
+
+  <script>
+    // JavaScript to handle star rating click
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+    const ratingFeedback = document.getElementById('rating-feedback');
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        let ratingValue = star.getAttribute('data-value');
+        ratingInput.value = ratingValue;
+
+        // Highlight the stars up to the clicked one
+        stars.forEach(s => {
+          s.style.color = s.getAttribute('data-value') <= ratingValue ? 'gold' : 'lightgray';
+        });
+
+        // Provide feedback
+        const feedbackMessages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
+        ratingFeedback.textContent = feedbackMessages[ratingValue - 1];
+      });
+    });
+
+    // JavaScript to handle character count in comment textarea
+    const commentInput = document.getElementById('comment');
+    const charCount = document.getElementById('charCount');
+
+    commentInput.addEventListener('input', () => {
+      charCount.textContent = `${commentInput.value.length} / 500 characters used`;
+    });
+  </script>
+{% endblock %}
+"""

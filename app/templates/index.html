@@ -84,7 +84,7 @@
                                         </form>
 
                                         <!-- Write Review Button -->
-                                        <a href="{{ url_for('main.write_review', provider_id=transaction.provider_id) }}" class="btn btn-danger btn-sm ms-2">Write Review</a>
+                                        <a href="{{ url_for('main.add_review', listing_id=transaction.listing_id) }}" class="btn btn-danger btn-sm ms-2">Write Review</a>
                                     </div>
                                 </li>
                             {% endfor %}

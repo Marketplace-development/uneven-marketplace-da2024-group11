@@ -22,7 +22,7 @@ class Provider(db.Model):
     __tablename__ = 'Provider'
     providerp = db.Column(db.BigInteger, db.ForeignKey('User.Phone_number'), primary_key=True, autoincrement=True)
     premium_provider = db.Column('Premium Provider', db.Boolean, nullable=True, default=False)
-    reviews = db.relationship('Review', back_populates='provider', cascade='all, delete-orphan')
+    listings = db.relationship('Listing', back_populates='provider')
 
 class Listing(db.Model):
     __tablename__ = 'Listing'
@@ -35,6 +35,8 @@ class Listing(db.Model):
     price_set_by_provider = db.Column('PriceSetByProvider', db.Numeric, nullable=True)
     availability = db.Column('Availability', db.Boolean, nullable=True)
     provider_id = db.Column('ProviderID', db.BigInteger, db.ForeignKey('Provider.providerp'), nullable=False)
+    provider = db.relationship('Provider', back_populates='listings')
+    reviews = db.relationship('Review', back_populates='listing')
     transactions = db.relationship('Transaction', back_populates='listing')
 
 class Transaction(db.Model):
@@ -42,17 +44,21 @@ class Transaction(db.Model):
     listing_id = db.Column('ListingID', db.BigInteger, db.ForeignKey('Listing.ListingID'), primary_key=True)
     provider_id = db.Column('ProviderP', db.BigInteger, db.ForeignKey('Provider.providerp'), primary_key=True)
     customer_phone = db.Column('PhoneC', db.BigInteger, db.ForeignKey('Customer.PhoneC'), primary_key=True)
-    commission_fee = db.Column('Commission fee', db.Float, nullable=True)  # Kolomnaam aangepast aan database
-    date = db.Column('Date', db.DateTime(timezone=True), nullable=False, server_default=func.now(), primary_key=True)  # Kolomnaam aangepast naar 'Date'
+    commission_fee = db.Column('Commission fee', db.Float, nullable=True)
+    date = db.Column('Date', db.DateTime(timezone=True), nullable=False, server_default=func.now(), primary_key=True)
+
     listing = db.relationship('Listing', back_populates='transactions')
+    customer = db.relationship('Customer')
+
 
 class Review(db.Model):
     __tablename__ = 'review'
-    review_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    customer_id = db.Column(db.BigInteger, db.ForeignKey('Customer.PhoneC'), nullable=True)
-    provider_id = db.Column(db.BigInteger, db.ForeignKey('Provider.providerp'), nullable=False)
-    rating = db.Column(db.SmallInteger, nullable=False)
-    comment = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime(timezone=True), default=datetime.now)
+    review_id = db.Column('ReviewID', db.BigInteger, primary_key=True, autoincrement=True)
+    customer_id = db.Column('CustomerID', db.BigInteger, db.ForeignKey('Customer.PhoneC'), nullable=False)
+    listing_id = db.Column('Listing_id', db.BigInteger, db.ForeignKey('Listing.ListingID'), nullable=False)
+    rating = db.Column('Rating', db.Integer, nullable=False)
+    comment = db.Column('Comment', db.Text, nullable=True)
+    date = db.Column('date', db.Date, nullable=False, default=datetime.utcnow)
 
-    provider = db.relationship('Provider', back_populates='reviews')
+    customer = db.relationship('Customer', backref='reviews')
+    listing = db.relationship('Listing', back_populates='reviews')
