@@ -301,6 +301,7 @@ def profile():
 
 
 
+
 @main.route('/return-rented-tool/<int:listing_id>', methods=['POST'])
 def make_available_again(listing_id):
     if 'phone_number' not in session:
@@ -322,7 +323,7 @@ def make_available_again(listing_id):
     listing.availability = True
 
     # Optionally, remove or update the transaction if needed
-    db.session.delete(transaction)  # Uncomment if you want to delete the transaction.
+    
 
     try:
         db.session.commit()
