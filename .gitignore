@@ -1,0 +1,8 @@
+# macOS-specifieke bestanden
+.DS_Store
+app/.DS_Store
+migrations/.DS_Store
+
+# Python gecompileerde bestanden
+__pycache__/
+*.pyc
