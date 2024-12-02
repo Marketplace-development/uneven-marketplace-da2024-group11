@@ -132,6 +132,19 @@ def add_listing():
             print(errors)  # Debug
             return render_template('add_listing.html', errors=errors)
 
+        # Check if the user is already a provider
+        provider = Provider.query.filter_by(providerp=provider_id).first()
+        if not provider:
+            # Create a new provider if they don't exist
+            provider = Provider(providerp=provider_id, premium_provider=False)
+            db.session.add(provider)
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                errors.append("Failed to create provider. Please try again.")
+                return render_template('add_listing.html', errors=errors)
+
         # Maak een nieuwe Listing aan
         new_listing = Listing(
             name_tool=listing_name,
@@ -143,10 +156,11 @@ def add_listing():
             availability=availability,
             provider_id=provider_id
         )
-        
+
         try:
             db.session.add(new_listing)
             db.session.commit()
+            flash("Listing added successfully!", "success")
             return redirect(url_for('main.listings'))
         except Exception as e:
             db.session.rollback()
@@ -155,6 +169,7 @@ def add_listing():
             return render_template('add_listing.html', errors=errors)
 
     return render_template('add_listing.html')
+
 
 @main.route('/listings')
 def listings():
