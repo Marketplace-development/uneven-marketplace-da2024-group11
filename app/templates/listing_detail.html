@@ -69,25 +69,6 @@
             background: #ccc;
             transform: translateY(-2px);
         }
-
-        .review-section {
-            margin-top: 30px;
-        }
-
-        .review-form {
-            margin-top: 20px;
-        }
-
-        .review-item {
-            margin-bottom: 15px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .review-item strong {
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -99,11 +80,32 @@
         {% if listing.image_path %}
             <img src="{{ url_for('static', filename='uploads/' + listing.image_path.split('/')[-1]) }}" class="listing-image" alt="{{ listing.name_tool }}">
         {% endif %}
-        
         <p><strong>Brand:</strong> {{ listing.brand }}</p>
         <p><strong>Condition:</strong> {{ listing.condition }}</p>
         <p><strong>Price:</strong> ${{ "%.2f"|format(listing.price_set_by_provider) }}</p>
         <p><strong>Availability:</strong> {{ 'Available' if listing.availability else 'Not Available' }}</p>
+        <p><strong>Provider ID:</strong> {{ listing.provider_id }}</p>
+
+        {% if listing.reviews %}
+            <div class="reviews-container">
+                <h3>Reviews:</h3>
+                {% for review in listing.reviews %}
+                    <div class="review">
+                        <div class="review-rating">
+                            <strong>Rating:</strong> {{ review.rating }} / 5
+                        </div>
+                        <div class="review-date">
+                            <strong>Date:</strong> {{ review.date.strftime('%Y-%m-%d') }}
+                        </div>
+                        <div class="review-comment">
+                            <strong>Comment:</strong> {{ review.comment or 'No comment provided' }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p><strong>Reviews:</strong> No reviews yet.</p>
+        {% endif %}
 
         {% if listing.availability %}
             <form action="{{ url_for('main.buy_listing', listing_id=listing.listing_id) }}" method="post">

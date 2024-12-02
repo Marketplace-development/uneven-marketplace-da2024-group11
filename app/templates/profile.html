@@ -68,26 +68,6 @@
                     {% endif %}
                 </div>
             </div>
-
-            <!-- Reviews Section -->
-            <section class="row mt-5">
-                <div class="col-md-12">
-                    <h2>Reviews</h2>
-                    {% if user.provider and user.provider.reviews %}
-                        <ul class="list-group">
-                            {% for review in user.provider.reviews %}
-                                <li class="list-group-item">
-                                    <strong>Rating:</strong> {{ review.rating }}/5<br>
-                                    <strong>Comment:</strong> {{ review.comment }}<br>
-                                    <strong>Written On:</strong> {{ review.date.strftime('%Y-%m-%d %H:%M:%S') }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-muted">No reviews yet.</p>
-                    {% endif %}
-                </div>
-            </section>
         {% else %}
             <!-- Not Logged In -->
             <div class="text-center">
