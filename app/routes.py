@@ -9,7 +9,6 @@ from flask import jsonify
 from app.services.listing_service import search_and_filter_listings
 from sqlalchemy.orm import Session
 
-
 main = Blueprint('main', __name__)
 
 @main.route('/')
@@ -241,15 +240,20 @@ def your_transactions():
 
 @main.route('/popular-listings', methods=['GET'])
 def popular_listings():
+    # Roep de calculate_popularity functie aan vanuit de service laag
     results = calculate_popularity(db.session)
+
+    # Vorm de resultaten om in een lijst van dictionaries voor gemakkelijker gebruik in de template
     listings = [{
-        "ListingID": row[0],
-        "NameTool": row[1],
-        "Bookings": row[2],
-        "AverageRating": row[3],
-        "PopularityScore": row[4]
-    } for row in results]
+        "ListingID": row.listing_id,
+        "NameTool": row.name_tool,
+        "AverageRating": row.gemiddelde_beoordeling,
+        "Rank": index + 1  # Voeg een rangnummer toe
+    } for index, row in enumerate(results)]
+
+    # Render de HTML-template en geef de lijst van listings door
     return render_template('popular_listings.html', listings=listings)
+
 
 @main.route('/pricing', methods=['GET'])
 def pricing():
