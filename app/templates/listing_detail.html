@@ -69,6 +69,25 @@
             background: #ccc;
             transform: translateY(-2px);
         }
+
+        .review-section {
+            margin-top: 30px;
+        }
+
+        .review-form {
+            margin-top: 20px;
+        }
+
+        .review-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .review-item strong {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -76,9 +95,11 @@
         <div class="listing-header">
             <h1>{{ listing.name_tool }}</h1>
         </div>
+        
         {% if listing.image_path %}
             <img src="{{ url_for('static', filename='uploads/' + listing.image_path.split('/')[-1]) }}" class="listing-image" alt="{{ listing.name_tool }}">
         {% endif %}
+        
         <p><strong>Brand:</strong> {{ listing.brand }}</p>
         <p><strong>Condition:</strong> {{ listing.condition }}</p>
         <p><strong>Price:</strong> ${{ "%.2f"|format(listing.price_set_by_provider) }}</p>
@@ -91,6 +112,43 @@
         {% endif %}
         
         <a href="{{ url_for('main.listings') }}" class="back-btn">Back to Listings</a>
+
+        <!-- Reviews Section -->
+        <div class="review-section">
+            <h2>Reviews</h2>
+            {% if listing.reviews %}
+                {% for review in listing.reviews %}
+                    <div class="review-item">
+                        <strong>Rating:</strong> {{ review.rating }}/5
+                        <p><strong>Comment:</strong> {{ review.comment }}</p>
+                        <p><strong>Written On:</strong> {{ review.date.strftime('%Y-%m-%d') }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No reviews yet for this tool.</p>
+            {% endif %}
+
+            <!-- Add a Review Form (Only for logged in users) -->
+            {% if user %}
+                <div class="review-form">
+                    <h3>Add Your Review</h3>
+                    <form action="{{ url_for('main.add_review', listing_id=listing.listing_id) }}" method="post">
+                        <div>
+                            <label for="rating">Rating (1-5):</label>
+                            <input type="number" name="rating" id="rating" min="1" max="5" required>
+                        </div>
+                        <div>
+                            <label for="comment">Your Comment:</label>
+                            <textarea name="comment" id="comment" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Submit Review</button>
+                    </form>
+                </div>
+            {% else %}
+                <p>You need to be logged in to submit a review.</p>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>
+
