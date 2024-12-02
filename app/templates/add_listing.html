@@ -13,7 +13,6 @@
                 <h1 class="text-center mb-4">Add Tool Listing</h1>
                 <form method="post" class="shadow p-4 rounded bg-light">
                     <div class="mb-3">
-                        <!-- Aangepaste naam: van name="name_tool" naar name="listing_name" -->
                         <label for="name_tool" class="form-label">Tool Name</label>
                         <input type="text" class="form-control" id="name_tool" name="listing_name" required>
                     </div>
@@ -23,11 +22,24 @@
                     </div>
                     <div class="mb-3">
                         <label for="condition" class="form-label">Condition</label>
-                        <input type="text" class="form-control" id="condition" name="condition">
+                        <select class="form-control" id="condition" name="condition">
+                            <option value="">Select Condition</option>
+                            <option value="new">New</option>
+                            <option value="almost_new">Almost New</option>
+                            <option value="lightly_used">Lightly Used</option>
+                            <option value="normal_use">Normal Use</option>
+                            <option value="heavily_used">Heavily Used</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="difficulty_level" class="form-label">Difficulty Level</label>
-                        <input type="text" class="form-control" id="difficulty_level" name="difficulty_level">
+                        <select class="form-control" id="difficulty_level" name="difficulty_level">
+                            <option value="">Select Difficulty Level</option>
+                            <option value="easy">Easy</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="advanced">Advanced</option>
+                            <option value="expert">Expert</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="battery_included" class="form-label">Battery Included</label>
@@ -38,11 +50,24 @@
                     </div>
                     <div class="mb-3">
                         <label for="fuel_type" class="form-label">Fuel Type</label>
-                        <input type="text" class="form-control" id="fuel_type" name="fuel_type">
+                        <select class="form-control" id="fuel_type" name="fuel_type">
+                            <option value="">Select Fuel Type</option>
+                            <option value="electric">Electric</option>
+                            <option value="gasoline">Gasoline</option>
+                            <option value="diesel">Diesel</option>
+                            <option value="manual">Manual (No Fuel)</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="safety_requirements" class="form-label">Safety Requirements</label>
-                        <input type="text" class="form-control" id="safety_requirements" name="safety_requirements">
+                        <select class="form-control" id="safety_requirements" name="safety_requirements">
+                            <option value="">Select Safety Requirements</option>
+                            <option value="goggles">Safety Goggles Required</option>
+                            <option value="gloves">Protective Gloves Required</option>
+                            <option value="helmet">Safety Helmet Required</option>
+                            <option value="ear_protection">Hearing Protection Required</option>
+                            <option value="none">No Specific Safety Requirements</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="product_code" class="form-label">Product Code</label>

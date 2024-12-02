@@ -2,10 +2,13 @@ from flask import Blueprint, request, redirect, url_for, render_template, sessio
 from app.models import db, User, Listing, Transaction, Customer, Provider, Review
 from app.services.popularity import calculate_popularity
 from app.services.pricing import dynamic_pricing_advanced
-from app.services.search import search_and_filter
 from app.services.recommendation import recommend_tools
 from datetime import datetime
 from decimal import Decimal
+from flask import jsonify
+from app.services.listing_service import search_and_filter_listings
+from sqlalchemy.orm import Session
+
 
 main = Blueprint('main', __name__)
 
@@ -132,6 +135,19 @@ def add_listing():
             print(errors)  # Debug
             return render_template('add_listing.html', errors=errors)
 
+        # Check if the user is already a provider
+        provider = Provider.query.filter_by(providerp=provider_id).first()
+        if not provider:
+            # Create a new provider if they don't exist
+            provider = Provider(providerp=provider_id, premium_provider=False)
+            db.session.add(provider)
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                errors.append("Failed to create provider. Please try again.")
+                return render_template('add_listing.html', errors=errors)
+
         # Maak een nieuwe Listing aan
         new_listing = Listing(
             name_tool=listing_name,
@@ -143,10 +159,11 @@ def add_listing():
             availability=availability,
             provider_id=provider_id
         )
-        
+
         try:
             db.session.add(new_listing)
             db.session.commit()
+            flash("Listing added successfully!", "success")
             return redirect(url_for('main.listings'))
         except Exception as e:
             db.session.rollback()
@@ -156,6 +173,7 @@ def add_listing():
 
     return render_template('add_listing.html')
 
+
 @main.route('/listings')
 def listings():
     all_listings = Listing.query.filter_by(availability=True).all()
@@ -164,34 +182,31 @@ def listings():
 @main.route('/buy-listing/<int:listing_id>', methods=['POST'])
 def buy_listing(listing_id):
     if 'phone_number' not in session:
-        flash("You need to be logged in to buy a tool.", "error")
+        flash("You need to be logged in to rent a tool.", "error")
         return redirect(url_for('main.login'))
 
     # Fetch the listing
     listing = Listing.query.get_or_404(listing_id)
 
-    # Check if the user is trying to buy their own product
+    # Prevent users from renting their own product
     if listing.provider_id == session['phone_number']:
-        flash("You cannot buy your own product.", "error")
+        flash("You cannot rent your own product.", "error")
         return redirect(url_for('main.listings'))
 
     if not listing.availability:
-        flash("This tool is not available for purchase.", "error")
+        flash("This tool is currently unavailable.", "error")
         return redirect(url_for('main.listings'))
 
-    # Ensure customer exists in the database
+    # Ensure the customer exists in the database
     customer_phone = session['phone_number']
     customer = Customer.query.filter_by(phone_c=customer_phone).first()
     if not customer:
-        new_customer = Customer(phone_c=customer_phone, premium=False)
-        db.session.add(new_customer)
+        customer = Customer(phone_c=customer_phone, premium=False)
+        db.session.add(customer)
         db.session.commit()
-        customer = new_customer
-
-    # Calculate the commission fee using Decimal
-    commission_fee = listing.price_set_by_provider * Decimal('0.05')
 
     # Create a new transaction
+    commission_fee = listing.price_set_by_provider * Decimal('0.05')
     new_transaction = Transaction(
         listing_id=listing.listing_id,
         provider_id=listing.provider_id,
@@ -200,19 +215,16 @@ def buy_listing(listing_id):
         date=datetime.now()
     )
 
-    # Mark the listing as unavailable
+    # Mark the tool as unavailable
     listing.availability = False
 
-    # Commit the transaction
     try:
         db.session.add(new_transaction)
         db.session.commit()
-        flash("You have successfully purchased this tool!", "success")
+        flash("You have successfully rented this tool!", "success")
     except Exception as e:
         db.session.rollback()
-        print(f"Error during transaction: {e}")
-        flash("There was an error processing your purchase.", "error")
-        return redirect(url_for('main.listings'))
+        flash("There was an error processing your rental.", "error")
 
     return redirect(url_for('main.index'))
 
@@ -249,30 +261,19 @@ def listing_detail(id):
     listing = Listing.query.get_or_404(id)
     return render_template('listing_detail.html', listing=listing)
 
-@main.route('/search', methods=['GET', 'POST'])
-def search():
-    if request.method == 'POST':
-        search_term = request.form.get('search_term', '').strip()
-        if not search_term:
-            flash("Search term is required.", "error")
-            return redirect(url_for('main.search'))
+@main.route('/listings/search', methods=['GET'])
+def search_listings():
+    filters = request.args.to_dict()  # Verzamelt filters vanuit URL parameters
+    sort_by = request.args.get('sort_by', None)
+    ascending = request.args.get('ascending', 'true').lower() == 'true'
+    page = int(request.args.get('page', 1))
+    page_size = int(request.args.get('page_size', 10))
 
-        price_range = (
-            float(request.form.get('min_price', 0)),
-            float(request.form.get('max_price', float('inf')))
-        ) if request.form.get('min_price') or request.form.get('max_price') else None
+    # Gebruik de db.session voor de database interactie
+    results = search_and_filter_listings(db.session, filters, sort_by, ascending, page, page_size)
 
-        filters = {
-            "Brand": request.form.get('brand'),
-            "PriceRange": price_range,
-            "Availability": request.form.get('availability', 'false') == 'true'
-        }
-        filters = {k: v for k, v in filters.items() if v}
-
-        results = search_and_filter(db.session, search_term, filters)
-        return render_template('search_results.html', results=results)
-
-    return render_template('search.html')
+    # Render de HTML template en geef de resultaten door
+    return render_template('listings_search.html', results=results, page=page, page_size=page_size)
 
 @main.route('/recommendations', methods=['GET'])
 def recommendations():
@@ -308,13 +309,13 @@ def make_available_again(listing_id):
         flash("You need to be logged in to return a rented tool.", "error")
         return redirect(url_for('main.login'))
 
-    # Get the listing being returned
+    # Fetch the listing being returned
     listing = Listing.query.get_or_404(listing_id)
 
-    # Ensure the user is the one who rented the tool
+    # Ensure the user is authorized to return the tool
     customer_phone = session['phone_number']
     transaction = Transaction.query.filter_by(listing_id=listing.listing_id, customer_phone=customer_phone).first()
-    
+
     if not transaction:
         flash("You are not authorized to return this tool.", "error")
         return redirect(url_for('main.index'))
@@ -322,15 +323,12 @@ def make_available_again(listing_id):
     # Mark the listing as available again
     listing.availability = True
 
-    # Optionally, remove or update the transaction if needed
-    
-
     try:
         db.session.commit()
-        flash("You have successfully returned the tool!", "success")
+        flash("The tool is now available again!", "success")
     except Exception as e:
         db.session.rollback()
-        flash("There was an error returning the tool.", "error")
+        flash("There was an error making the tool available again.", "error")
 
     return redirect(url_for('main.index'))
 

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Listings</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .search-container {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .btn-search {
+            width: 100%;
+            font-weight: bold;
+        }
+        .results-container {
+            margin-top: 30px;
+        }
+        .rating {
+            color: #FFD700;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="search-container">
+                    <h3 class="text-center">Search for Tools</h3>
+                    <form action="/listings/search" method="get">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="name_tool">Tool Name</label>
+                                <input type="text" class="form-control" id="name_tool" name="name_tool" placeholder="Enter tool name" value="{{ request.args.get('name_tool', '') }}">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="brand">Brand</label>
+                                <input type="text" class="form-control" id="brand" name="brand" placeholder="Enter brand" value="{{ request.args.get('brand', '') }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="condition">Condition</label>
+                                <select class="form-control" id="condition" name="condition">
+                                    <option value="">Select Condition</option>
+                                    <option value="new" {% if request.args.get('condition') == 'new' %}selected{% endif %}>New</option>
+                                    <option value="almost_new" {% if request.args.get('condition') == 'almost_new' %}selected{% endif %}>Almost New</option>
+                                    <option value="lightly_used" {% if request.args.get('condition') == 'lightly_used' %}selected{% endif %}>Lightly Used</option>
+                                    <option value="normal_use" {% if request.args.get('condition') == 'normal_use' %}selected{% endif %}>Normal Use</option>
+                                    <option value="heavily_used" {% if request.args.get('condition') == 'heavily_used' %}selected{% endif %}>Heavily Used</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="price_min">Min Price</label>
+                                <input type="number" class="form-control" id="price_min" name="price_min" placeholder="Min" value="{{ request.args.get('price_min', '') }}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="price_max">Max Price</label>
+                                <input type="number" class="form-control" id="price_max" name="price_max" placeholder="Max" value="{{ request.args.get('price_max', '') }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="battery_included" name="battery_included" {% if request.args.get('battery_included') %}checked{% endif %}>
+                                    <label class="form-check-label" for="battery_included">
+                                        Battery Included
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="availability" name="availability" {% if request.args.get('availability') %}checked{% endif %}>
+                                    <label class="form-check-label" for="availability">
+                                        Available Now
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="sort_by">Sort By</label>
+                                <select class="form-control" id="sort_by" name="sort_by">
+                                    <option value="">No Sorting</option>
+                                    <option value="price" {% if request.args.get('sort_by') == 'price' %}selected{% endif %}>Price</option>
+                                    <option value="rating" {% if request.args.get('sort_by') == 'rating' %}selected{% endif %}>Rating</option>
+                                    <option value="date" {% if request.args.get('sort_by') == 'date' %}selected{% endif %}>Date</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-search">Search</button>
+                    </form>
+                </div>
+                <div class="results-container mt-5">
+                    <h4>Search Results:</h4>
+                    {% if results %}
+                        <ul class="list-group">
+                            {% for listing in results %}
+                                <li class="list-group-item">
+                                    <strong>{{ listing.name_tool }}</strong> - ${{ "%.2f"|format(listing.price_set_by_provider) }}
+                                    <br>
+                                    <span>Brand: {{ listing.brand }}</span><br>
+                                    <span>Condition: {{ listing.condition }}</span><br>
+                                    <!-- Rating (Stars) -->
+                                    {% if listing.reviews|length > 0 %}
+                                        {% set average_rating = (listing.reviews | map(attribute='rating') | sum) / listing.reviews|length %}
+                                        <p>Average Rating: 
+                                            {% for star in range(average_rating|round(0, 'floor')|int) %}
+                                                &#9733;
+                                            {% endfor %}
+                                            {% for star in range(5 - average_rating|round(0, 'floor')|int) %}
+                                                &#9734;
+                                            {% endfor %}
+                                        </p>
+                                    {% else %}
+                                        <p>Average Rating: Not yet rated</p>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="pagination-container mt-4">
+                            {% if page > 1 %}
+                                <a href="?{{ request.query_string.decode('utf-8')|safe }}&page={{ page - 1 }}" class="btn btn-secondary">Previous</a>
+                            {% endif %}
+                            <a href="?{{ request.query_string.decode('utf-8')|safe }}&page={{ page + 1 }}" class="btn btn-secondary">Next</a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No results found for your search.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
