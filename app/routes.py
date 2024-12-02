@@ -332,6 +332,8 @@ def make_available_again(listing_id):
 
     return redirect(url_for('main.index'))
 
+
+
 @main.route('/add-review/<int:listing_id>', methods=['GET', 'POST'])
 def add_review(listing_id):
     if 'phone_number' not in session:
@@ -377,5 +379,6 @@ def add_review(listing_id):
 @main.context_processor
 def inject_datetime():
     return {'datetime': datetime}
+
 
 
