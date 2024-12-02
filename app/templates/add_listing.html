@@ -60,14 +60,26 @@
                     </div>
                     <div class="mb-3">
                         <label for="safety_requirements" class="form-label">Safety Requirements</label>
-                        <select class="form-control" id="safety_requirements" name="safety_requirements">
-                            <option value="">Select Safety Requirements</option>
-                            <option value="goggles">Safety Goggles Required</option>
-                            <option value="gloves">Protective Gloves Required</option>
-                            <option value="helmet">Safety Helmet Required</option>
-                            <option value="ear_protection">Hearing Protection Required</option>
-                            <option value="none">No Specific Safety Requirements</option>
-                        </select>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="goggles" name="safety_requirements[]" value="goggles">
+                            <label class="form-check-label" for="goggles">Safety Goggles Required</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="gloves" name="safety_requirements[]" value="gloves">
+                            <label class="form-check-label" for="gloves">Protective Gloves Required</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="helmet" name="safety_requirements[]" value="helmet">
+                            <label class="form-check-label" for="helmet">Safety Helmet Required</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="ear_protection" name="safety_requirements[]" value="ear_protection">
+                            <label class="form-check-label" for="ear_protection">Hearing Protection Required</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="none" name="safety_requirements[]" value="none">
+                            <label class="form-check-label" for="none">No Specific Safety Requirements</label>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="product_code" class="form-label">Product Code</label>
