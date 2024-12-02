@@ -164,34 +164,31 @@ def listings():
 @main.route('/buy-listing/<int:listing_id>', methods=['POST'])
 def buy_listing(listing_id):
     if 'phone_number' not in session:
-        flash("You need to be logged in to buy a tool.", "error")
+        flash("You need to be logged in to rent a tool.", "error")
         return redirect(url_for('main.login'))
 
     # Fetch the listing
     listing = Listing.query.get_or_404(listing_id)
 
-    # Check if the user is trying to buy their own product
+    # Prevent users from renting their own product
     if listing.provider_id == session['phone_number']:
-        flash("You cannot buy your own product.", "error")
+        flash("You cannot rent your own product.", "error")
         return redirect(url_for('main.listings'))
 
     if not listing.availability:
-        flash("This tool is not available for purchase.", "error")
+        flash("This tool is currently unavailable.", "error")
         return redirect(url_for('main.listings'))
 
-    # Ensure customer exists in the database
+    # Ensure the customer exists in the database
     customer_phone = session['phone_number']
     customer = Customer.query.filter_by(phone_c=customer_phone).first()
     if not customer:
-        new_customer = Customer(phone_c=customer_phone, premium=False)
-        db.session.add(new_customer)
+        customer = Customer(phone_c=customer_phone, premium=False)
+        db.session.add(customer)
         db.session.commit()
-        customer = new_customer
-
-    # Calculate the commission fee using Decimal
-    commission_fee = listing.price_set_by_provider * Decimal('0.05')
 
     # Create a new transaction
+    commission_fee = listing.price_set_by_provider * Decimal('0.05')
     new_transaction = Transaction(
         listing_id=listing.listing_id,
         provider_id=listing.provider_id,
@@ -200,19 +197,16 @@ def buy_listing(listing_id):
         date=datetime.now()
     )
 
-    # Mark the listing as unavailable
+    # Mark the tool as unavailable
     listing.availability = False
 
-    # Commit the transaction
     try:
         db.session.add(new_transaction)
         db.session.commit()
-        flash("You have successfully purchased this tool!", "success")
+        flash("You have successfully rented this tool!", "success")
     except Exception as e:
         db.session.rollback()
-        print(f"Error during transaction: {e}")
-        flash("There was an error processing your purchase.", "error")
-        return redirect(url_for('main.listings'))
+        flash("There was an error processing your rental.", "error")
 
     return redirect(url_for('main.index'))
 
@@ -308,13 +302,13 @@ def make_available_again(listing_id):
         flash("You need to be logged in to return a rented tool.", "error")
         return redirect(url_for('main.login'))
 
-    # Get the listing being returned
+    # Fetch the listing being returned
     listing = Listing.query.get_or_404(listing_id)
 
-    # Ensure the user is the one who rented the tool
+    # Ensure the user is authorized to return the tool
     customer_phone = session['phone_number']
     transaction = Transaction.query.filter_by(listing_id=listing.listing_id, customer_phone=customer_phone).first()
-    
+
     if not transaction:
         flash("You are not authorized to return this tool.", "error")
         return redirect(url_for('main.index'))
@@ -322,17 +316,16 @@ def make_available_again(listing_id):
     # Mark the listing as available again
     listing.availability = True
 
-    # Optionally, remove or update the transaction if needed
-    
-
     try:
         db.session.commit()
-        flash("You have successfully returned the tool!", "success")
+        flash("The tool is now available again!", "success")
     except Exception as e:
         db.session.rollback()
-        flash("There was an error returning the tool.", "error")
+        flash("There was an error making the tool available again.", "error")
 
     return redirect(url_for('main.index'))
+
+
 
 @main.route('/add-review/<int:listing_id>', methods=['GET', 'POST'])
 def add_review(listing_id):
@@ -379,5 +372,6 @@ def add_review(listing_id):
 @main.context_processor
 def inject_datetime():
     return {'datetime': datetime}
+
 
 
