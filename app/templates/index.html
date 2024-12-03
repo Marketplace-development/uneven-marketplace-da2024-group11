@@ -15,7 +15,7 @@
         h1, h2 {
             color: #343a40;
         }
-        .btn-primary, .btn-info {
+        .btn-primary, .btn-info, .btn-danger {
             border-radius: 50px;
         }
         .list-group-item {
@@ -78,8 +78,8 @@
     <!-- Main Content -->
     <div class="container mt-5">
         {% if username %}
-            <!-- User's Products Section -->
             <div class="row">
+                <!-- User's Products Section -->
                 <div class="col-md-6 mb-4">
                     <h2 class="mb-4">Your Products</h2>
                     {% if listings %}
@@ -91,6 +91,12 @@
                                         <strong>{{ listing.name_tool }}</strong> - ${{ "%.2f"|format(listing.price_set_by_provider) }}<br>
                                         <em>Status:</em> {{ 'Available' if listing.availability else 'Rented' }}
                                     </span>
+                                    <div>
+                                        <!-- Remove Listing Button -->
+                                        <form action="{{ url_for('main.remove_listing', listing_id=listing.listing_id) }}" method="POST" class="d-inline">
+                                            <button class="btn btn-danger btn-sm">Remove Listing</button>
+                                        </form>
+                                    </div>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -99,6 +105,7 @@
                     {% endif %}
                 </div>
 
+                <!-- All Products Section -->
                 <div class="col-md-6">
                     <h2 class="mb-4">All Products</h2>
                     <div class="d-flex">
@@ -107,7 +114,7 @@
                     </div>
                 </div>
 
-                <!-- Populaire Tools Sectie -->
+                <!-- Popular Tools Section -->
                 <div class="col-md-12 mt-4">
                     <h2>Populaire Tools</h2>
                     <a href="{{ url_for('main.popular_listings') }}" class="btn btn-info mb-3">View All Popular Listings</a>
@@ -134,7 +141,6 @@
                         <p class="text-muted">Er zijn momenteel geen populaire tools beschikbaar.</p>
                     {% endif %}
                 </div>
-                <!-- Einde Populaire Tools Sectie -->
             </div>
 
             <!-- Rented Tools Section -->
@@ -155,7 +161,7 @@
                                         <div>
                                             {% if not transaction.listing.availability %}
                                                 <form action="{{ url_for('main.make_available_again', listing_id=transaction.listing.listing_id) }}" method="POST" class="d-inline">
-                                                    <button class="btn btn-warning btn-sm" type="submit">Make Available Again</button>
+                                                    <button class="btn btn-warning btn-sm">Make Available Again</button>
                                                 </form>
                                             {% endif %}
                                             <a href="{{ url_for('main.add_review', listing_id=transaction.listing.listing_id) }}" class="btn btn-danger btn-sm ms-2">Write Review</a>
