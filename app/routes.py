@@ -182,10 +182,17 @@ def remove_listing(listing_id):
 
     return redirect(url_for('main.index'))
 
-@main.route('/listings')
-def listings():
-    all_listings = Listing.query.filter_by(availability=True).all()
-    return render_template('listings.html', listings=all_listings)
+@main.route('/listing/<int:id>')
+def listing_detail(id):
+    # Haal de huidige tool op
+    listing = Listing.query.get_or_404(id)
+    
+    # Genereer aanbevelingen voor tools
+    recommended_tools = recommend_tools(db.session, listing_id=id)
+    
+    # Geef de huidige tool en aanbevelingen door aan de template
+    return render_template('listing_detail.html', listing=listing, recommended_tools=recommended_tools)
+
 
 @main.route('/buy-listing/<int:listing_id>', methods=['POST'])
 def buy_listing(listing_id):
@@ -263,10 +270,10 @@ def pricing():
     pricing_data = dynamic_pricing_advanced(db.session)
     return render_template('pricing.html', pricing_data=pricing_data)
 
-@main.route('/listing/<int:id>')
-def listing_detail(id):
-    listing = Listing.query.get_or_404(id)
-    return render_template('listing_detail.html', listing=listing)
+@main.route('/listings')
+def listings():
+    all_listings = Listing.query.filter_by(availability=True).all()
+    return render_template('listings.html', listings=all_listings)
 
 @main.route('/listings/search', methods=['GET'])
 def search_listings():

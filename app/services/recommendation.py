@@ -1,30 +1,46 @@
-from sqlalchemy import func
-from app.models import Transaction, Listing
+from app.models import Listing, Transaction, Review
+from sqlalchemy.sql import func
 
-def recommend_tools(session, user_id):
+def recommend_tools(session, listing_id, limit=5):
     """
-    Aanbevelingen genereren voor een specifieke gebruiker.
-    :param session: Database sessie
-    :param user_id: ID van de gebruiker
-    :return: Lijst van aanbevolen tools
+    Genereert een lijst van aanbevolen tools op basis van een specifieke tool.
+    :param session: Database sessie.
+    :param listing_id: ID van de huidige tool.
+    :param limit: Aantal aanbevelingen.
+    :return: Lijst met aanbevolen tools.
     """
-    # Stap 1: Vind tools die de gebruiker eerder heeft gehuurd
-    user_transactions = session.query(Transaction.ListingID).filter(
-        Transaction.CustomerID == user_id
-    ).subquery()
+    # Huidige tool ophalen
+    current_listing = session.query(Listing).get(listing_id)
 
-    # Stap 2: Zoek tools met vergelijkbare eigenschappen
-    recommendations = session.query(
-        Listing.ListingID,
-        Listing.NameTool
-    ).filter(
-        ~Listing.ListingID.in_(user_transactions),  # Sluit gehuurde tools uit
-        Listing.Brand.in_(
-            session.query(Listing.Brand).filter(Listing.ListingID.in_(user_transactions))
-        ),
-        Listing.FuelType.in_(
-            session.query(Listing.FuelType).filter(Listing.ListingID.in_(user_transactions))
-        )
-    ).all()
+    # Stap 1: Aanbevelingen op basis van hetzelfde merk
+    same_brand_tools = session.query(Listing).filter(
+        Listing.brand == current_listing.brand,
+        Listing.availability == True,
+        Listing.listing_id != listing_id
+    ).limit(limit).all()
 
-    return recommendations
+    # Stap 2: Vul aan met populaire tools (met beoordelingen)
+    if len(same_brand_tools) < limit:
+        additional_tools = session.query(
+            Listing, func.avg(Review.rating).label("average_rating")
+        ).join(Review, Review.listing_id == Listing.listing_id) \
+        .filter(Listing.availability == True) \
+        .group_by(
+            Listing.listing_id,
+            Listing.name_tool,
+            Listing.brand,
+            Listing.condition,
+            Listing.battery_included,
+            Listing.product_code,
+            Listing.price_set_by_provider,
+            Listing.availability,
+            Listing.provider_id
+        ) \
+        .order_by(func.avg(Review.rating).desc()) \
+        .limit(limit - len(same_brand_tools)) \
+        .all()
+
+        # Voeg de tools toe aan de lijst
+        same_brand_tools.extend([tool for tool, _ in additional_tools])
+
+    return same_brand_tools
