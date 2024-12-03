@@ -15,7 +15,7 @@
         h1, h2 {
             color: #343a40;
         }
-        .btn-primary, .btn-info {
+        .btn-primary, .btn-info, .btn-danger, .dropdown-toggle {
             border-radius: 50px;
         }
         .list-group-item {
@@ -35,41 +35,88 @@
         footer p {
             margin: 0;
         }
+        .dropdown-menu a {
+            padding: 10px 20px;
+            color: #343a40;
+        }
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown-toggle::after {
+            content: none;
+        }
+        .navbar-nav .dropdown {
+            position: relative;
+        }
+        .dropdown-toggle {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+        }
+        .dropdown-toggle:hover, .dropdown-toggle:focus {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        /* Navbar layout */
+        .navbar-brand {
+            flex-grow: 1;
+            text-align: left;
+            font-size: 2rem;
+        }
+
+        /* Right aligned hamburger */
+        .navbar-toggler {
+            margin-left: auto;
+        }
+
+        /* Ensure dropdown takes up right space */
+        .navbar-nav {
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
+            <!-- Left side: EasyTools -->
             <a class="navbar-brand fw-bold text-primary" href="#">EasyTools</a>
+
+            <!-- Right side: Hamburger menu -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {% if username %}
-                        <li class="nav-item">
-                            <span class="nav-link">Welcome, <strong>{{ username }}</strong>!</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.profile') }}">Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.search_listings') }}">Search Tools</a>
-                        </li>
-                        <li class="nav-item">
-                            <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
-                                <button class="btn btn-danger btn-sm" type="submit" aria-label="Log out">Logout</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.register') }}">Register</a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if username %}
+                                    Welcome, <strong>{{ username }}</strong>
+                                {% else %}
+                                    Pages
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                {% if username %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.listings') }}">View All Products</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.popular_listings') }}">View Popular Listings</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
+                                        <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
+                                    </form></li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -79,11 +126,10 @@
     <div class="container mt-5">
         {% if username %}
             <!-- User's Products Section -->
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <h2 class="mb-4">Your Products</h2>
+            <div class="row product-listing">
+                <div class="col-md-12 mb-4">
+                    <h2 class="section-title">Your Products</h2>
                     {% if listings %}
-                        <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary mb-3">Add Products</a>
                         <ul class="list-group">
                             {% for listing in listings %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -98,19 +144,12 @@
                         <p>No products available. <a href="{{ url_for('main.add_listing') }}">Add your first product</a>.</p>
                     {% endif %}
                 </div>
+            </div>
 
-                <div class="col-md-6">
-                    <h2 class="mb-4">All Products</h2>
-                    <div class="d-flex">
-                        <a href="{{ url_for('main.listings') }}" class="btn btn-info me-2">View All Products</a>
-                        <a href="{{ url_for('main.search_listings') }}" class="btn btn-info">Search Listings</a>
-                    </div>
-                </div>
-
-                <!-- Populaire Tools Sectie -->
-                <div class="col-md-12 mt-4">
-                    <h2>Populaire Tools</h2>
-                    <a href="{{ url_for('main.popular_listings') }}" class="btn btn-info mb-3">View All Popular Listings</a>
+            <!-- Populaire Tools Sectie -->
+            <div class="row popular-tools">
+                <div class="col-md-12">
+                    <h2 class="section-title">Populaire Tools</h2>
                     {% if populaire_tools %}
                         <table class="table table-striped">
                             <thead>
@@ -134,13 +173,12 @@
                         <p class="text-muted">Er zijn momenteel geen populaire tools beschikbaar.</p>
                     {% endif %}
                 </div>
-                <!-- Einde Populaire Tools Sectie -->
             </div>
 
             <!-- Rented Tools Section -->
-            <div class="row mt-5">
+            <div class="row rented-tools">
                 <div class="col-md-12">
-                    <h2>Your Rented Tools</h2>
+                    <h2 class="section-title">Your Rented Tools</h2>
                     {% if transactions %}
                         <ul class="list-group">
                             {% set seen_listings = [] %}
@@ -186,6 +224,7 @@
         <p>&copy; {{ datetime.now().year }} EasyTools. All Rights Reserved.</p>
     </footer>
 
+    <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
