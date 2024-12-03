@@ -15,7 +15,7 @@ main = Blueprint('main', __name__)
 def index():
     if 'phone_number' in session:
         user = User.query.filter_by(phone_number=session['phone_number']).first_or_404()
-        listings = Listing.query.filter_by(provider_id=user.phone_number).all()
+        listings = Listing.query.filter_by(provider_id=user.phone_number, availability=True).all()
         transactions = Transaction.query.filter_by(customer_phone=user.phone_number).all()
         return render_template('index.html', username=user.username, listings=listings, transactions=transactions)
     return render_template('index.html')
@@ -25,7 +25,6 @@ def login():
     if request.method == 'POST':
         phone_number = request.form.get('phone_number')
 
-        # Validatie van het telefoonnummer
         if not phone_number:
             flash("Phone number is required.", "error")
             return redirect(url_for('main.login'))
@@ -50,7 +49,6 @@ def register():
         city = request.form.get('city')
         email = request.form.get('email')
 
-        # Validatie
         errors = []
         if not username:
             errors.append("Username is required.")
@@ -63,7 +61,6 @@ def register():
         if errors:
             return render_template('register.html', errors=errors)
 
-        # Controleer of de gebruiker al bestaat op basis van e-mailadres of telefoonnummer
         existing_user_by_email = User.query.filter_by(email=email).first()
         if existing_user_by_email:
             flash("An account with this email already exists.", "error")
@@ -74,7 +71,6 @@ def register():
             flash("An account with this phone number already exists.", "error")
             return redirect(url_for('main.register'))
 
-        # Voeg de gebruiker toe aan de database
         new_user = User(
             phone_number=phone_number,
             username=username,
@@ -86,7 +82,6 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        # Bewaar de gebruiker in de sessie
         session['phone_number'] = new_user.phone_number
         return redirect(url_for('main.index'))
 
@@ -103,17 +98,15 @@ def add_listing():
         return redirect(url_for('main.login'))
 
     if request.method == 'POST':
-        # Haal gegevens op uit het formulier
         listing_name = request.form.get('listing_name')
         brand = request.form.get('brand')
         condition = request.form.get('condition')
-        battery_included = request.form.get('battery_included') == 'True'  # Boolean check
+        battery_included = request.form.get('battery_included') == 'True'
         product_code = request.form.get('product_code')
         price = request.form.get('price')
-        availability = request.form.get('availability') == 'True'  # Boolean check
+        availability = request.form.get('availability') == 'True'
         provider_id = session['phone_number']
 
-        # Validatie
         errors = []
         if not listing_name:
             errors.append("Listing name is required.")
@@ -131,23 +124,19 @@ def add_listing():
                 errors.append("Invalid product code format.")
 
         if errors:
-            print(errors)  # Debug
             return render_template('add_listing.html', errors=errors)
 
-        # Check if the user is already a provider
         provider = Provider.query.filter_by(providerp=provider_id).first()
         if not provider:
-            # Create a new provider if they don't exist
             provider = Provider(providerp=provider_id, premium_provider=False)
             db.session.add(provider)
             try:
                 db.session.commit()
-            except Exception as e:
+            except Exception:
                 db.session.rollback()
                 errors.append("Failed to create provider. Please try again.")
                 return render_template('add_listing.html', errors=errors)
 
-        # Maak een nieuwe Listing aan
         new_listing = Listing(
             name_tool=listing_name,
             brand=brand,
@@ -166,12 +155,32 @@ def add_listing():
             return redirect(url_for('main.listings'))
         except Exception as e:
             db.session.rollback()
-            print(f"Fout bij het toevoegen van de listing: {e}")
-            errors.append("Er is een fout opgetreden bij het toevoegen van de listing.")
+            flash("There was an error adding the listing.", "error")
             return render_template('add_listing.html', errors=errors)
 
     return render_template('add_listing.html')
 
+@main.route('/remove-listing/<int:listing_id>', methods=['POST'])
+def remove_listing(listing_id):
+    if 'phone_number' not in session:
+        flash("You need to be logged in to remove a listing.", "error")
+        return redirect(url_for('main.login'))
+
+    listing = Listing.query.filter_by(listing_id=listing_id, provider_id=session['phone_number']).first()
+    if not listing:
+        flash("You are not authorized to remove this listing.", "error")
+        return redirect(url_for('main.index'))
+
+    listing.availability = False
+
+    try:
+        db.session.commit()
+        flash("The listing has been removed from your dashboard.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("There was an error removing the listing.", "error")
+
+    return redirect(url_for('main.index'))
 
 @main.route('/listings')
 def listings():
@@ -184,10 +193,8 @@ def buy_listing(listing_id):
         flash("You need to be logged in to rent a tool.", "error")
         return redirect(url_for('main.login'))
 
-    # Fetch the listing
     listing = Listing.query.get_or_404(listing_id)
 
-    # Prevent users from renting their own product
     if listing.provider_id == session['phone_number']:
         flash("You cannot rent your own product.", "error")
         return redirect(url_for('main.listings'))
@@ -196,7 +203,6 @@ def buy_listing(listing_id):
         flash("This tool is currently unavailable.", "error")
         return redirect(url_for('main.listings'))
 
-    # Ensure the customer exists in the database
     customer_phone = session['phone_number']
     customer = Customer.query.filter_by(phone_c=customer_phone).first()
     if not customer:
@@ -204,7 +210,6 @@ def buy_listing(listing_id):
         db.session.add(customer)
         db.session.commit()
 
-    # Create a new transaction
     commission_fee = listing.price_set_by_provider * Decimal('0.05')
     new_transaction = Transaction(
         listing_id=listing.listing_id,
@@ -214,19 +219,17 @@ def buy_listing(listing_id):
         date=datetime.now()
     )
 
-    # Mark the tool as unavailable
     listing.availability = False
 
     try:
         db.session.add(new_transaction)
         db.session.commit()
         flash("You have successfully rented this tool!", "success")
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         flash("There was an error processing your rental.", "error")
 
     return redirect(url_for('main.index'))
-
 
 
 @main.route('/your-transactions')

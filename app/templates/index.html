@@ -15,7 +15,7 @@
         h1, h2 {
             color: #343a40;
         }
-        .btn-primary, .btn-info, .btn-danger, .dropdown-toggle {
+        .btn-primary, .btn-info, .btn-danger, .btn-warning {
             border-radius: 50px;
         }
         .list-group-item {
@@ -35,44 +35,45 @@
         footer p {
             margin: 0;
         }
-        .dropdown-menu a {
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .hero-section p {
+            font-size: 1.25rem;
+            color: #6c757d;
+        }
+        .hero-section .btn {
+            margin-top: 1rem;
+            font-size: 1.2rem;
             padding: 10px 20px;
+        }
+        .content-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+        .content-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.5rem;
+        }
+        .content-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
             color: #343a40;
-        }
-        .dropdown-menu a:hover {
-            background-color: #f1f1f1;
-        }
-        .dropdown-toggle::after {
-            content: none;
-        }
-        .navbar-nav .dropdown {
-            position: relative;
-        }
-        .dropdown-toggle {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-        }
-        .dropdown-toggle:hover, .dropdown-toggle:focus {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-        /* Navbar layout */
-        .navbar-brand {
-            flex-grow: 1;
-            text-align: left;
-            font-size: 2rem;
-        }
-
-        /* Right aligned hamburger */
-        .navbar-toggler {
-            margin-left: auto;
-        }
-
-        /* Ensure dropdown takes up right space */
-        .navbar-nav {
-            margin-left: auto;
         }
     </style>
 </head>
@@ -80,14 +81,10 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <!-- Left side: EasyTools -->
             <a class="navbar-brand fw-bold text-primary" href="#">EasyTools</a>
-
-            <!-- Right side: Hamburger menu -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -105,7 +102,6 @@
                                     <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.listings') }}">View All Products</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.popular_listings') }}">View Popular Listings</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
                                         <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
@@ -122,101 +118,74 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container mt-5">
-        {% if username %}
-            <!-- User's Products Section -->
-            <div class="row product-listing">
-                <div class="col-md-12 mb-4">
-                    <h2 class="section-title">Your Products</h2>
-                    {% if listings %}
-                        <ul class="list-group">
-                            {% for listing in listings %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>
-                                        <strong>{{ listing.name_tool }}</strong> - ${{ "%.2f"|format(listing.price_set_by_provider) }}<br>
-                                        <em>Status:</em> {{ 'Available' if listing.availability else 'Rented' }}
-                                    </span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No products available. <a href="{{ url_for('main.add_listing') }}">Add your first product</a>.</p>
-                    {% endif %}
-                </div>
-            </div>
+    <!-- Hero Section -->
+    <div class="container hero-section mt-5">
+        <h1>Find the Best Equipment for Your Project</h1>
+        <p>Browse, rent, and manage your tools effortlessly with EasyTools.</p>
+        <a href="{{ url_for('main.listings') }}" class="btn btn-info btn-lg">View All Listings</a>
+    </div>
 
-            <!-- Populaire Tools Sectie -->
-            <div class="row popular-tools">
-                <div class="col-md-12">
-                    <h2 class="section-title">Populaire Tools</h2>
-                    {% if populaire_tools %}
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Listing ID</th>
-                                    <th>Naam Tool</th>
-                                    <th>Gemiddelde Beoordeling (Sterren)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for listing in populaire_tools %}
-                                    <tr>
-                                        <td>{{ listing.ListingID }}</td>
-                                        <td>{{ listing.NameTool }}</td>
-                                        <td>{{ listing.AverageRating | round(2) }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% else %}
-                        <p class="text-muted">Er zijn momenteel geen populaire tools beschikbaar.</p>
-                    {% endif %}
-                </div>
+    <!-- Content Section -->
+    <div class="container content-section mt-5">
+        <!-- Your Products -->
+        <div class="content-column">
+            <div class="content-header">
+                <h2>Your Products</h2>
+                <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary btn-sm">Add Products</a>
             </div>
+            {% if listings %}
+                <ul class="list-group">
+                    {% for listing in listings %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <strong>{{ listing.name_tool }}</strong> - ${{ "%.2f"|format(listing.price_set_by_provider) }}<br>
+                                <em>Status:</em> {{ 'Available' if listing.availability else 'Rented' }}
+                            </span>
+                            <div>
+                                <form action="{{ url_for('main.remove_listing', listing_id=listing.listing_id) }}" method="POST" class="d-inline">
+                                    <button class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No products available. <a href="{{ url_for('main.add_listing') }}">Add your first product</a>.</p>
+            {% endif %}
+        </div>
 
-            <!-- Rented Tools Section -->
-            <div class="row rented-tools">
-                <div class="col-md-12">
-                    <h2 class="section-title">Your Rented Tools</h2>
-                    {% if transactions %}
-                        <ul class="list-group">
-                            {% set seen_listings = [] %}
-                            {% for transaction in transactions|sort(attribute='date', reverse=True) %}
-                                {% if transaction.listing.listing_id not in seen_listings %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <strong>Tool Name:</strong> {{ transaction.listing.name_tool }}<br>
-                                            <strong>Purchased On:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}<br>
-                                            <em>Status:</em> {{ 'Available' if transaction.listing.availability else 'Rented' }}
-                                        </span>
-                                        <div>
-                                            {% if not transaction.listing.availability %}
-                                                <form action="{{ url_for('main.make_available_again', listing_id=transaction.listing.listing_id) }}" method="POST" class="d-inline">
-                                                    <button class="btn btn-warning btn-sm" type="submit">Make Available Again</button>
-                                                </form>
-                                            {% endif %}
-                                            <a href="{{ url_for('main.add_review', listing_id=transaction.listing.listing_id) }}" class="btn btn-danger btn-sm ms-2">Write Review</a>
-                                        </div>
-                                    </li>
-                                    {% set seen_listings = seen_listings.append(transaction.listing.listing_id) %}
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-muted">You have no transactions yet.</p>
-                    {% endif %}
-                </div>
+        <!-- Your Rented Tools -->
+        <div class="content-column">
+            <div class="content-header">
+                <h2>Your Rented Tools</h2>
             </div>
-        {% else %}
-            <!-- Guest View -->
-            <div class="text-center">
-                <h1>Welcome to EasyTools!</h1>
-                <p class="lead">Your one-stop solution for tool rentals.</p>
-                <a href="{{ url_for('main.login') }}" class="btn btn-primary me-2">Login</a>
-                <a href="{{ url_for('main.register') }}" class="btn btn-secondary">Register</a>
-            </div>
-        {% endif %}
+            {% if transactions %}
+                <ul class="list-group">
+                    {% set seen_listings = [] %}
+                    {% for transaction in transactions|sort(attribute='date', reverse=True) %}
+                        {% if transaction.listing.listing_id not in seen_listings %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <strong>Tool:</strong> {{ transaction.listing.name_tool }}<br>
+                                    <strong>Rented On:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}
+                                </span>
+                                <div>
+                                    {% if not transaction.listing.availability %}
+                                        <form action="{{ url_for('main.make_available_again', listing_id=transaction.listing.listing_id) }}" method="POST" class="d-inline">
+                                            <button class="btn btn-warning btn-sm">Return</button>
+                                        </form>
+                                    {% endif %}
+                                    <a href="{{ url_for('main.add_review', listing_id=transaction.listing.listing_id) }}" class="btn btn-danger btn-sm ms-2">Review</a>
+                                </div>
+                            </li>
+                            {% set seen_listings = seen_listings.append(transaction.listing.listing_id) %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No rented tools found.</p>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Footer -->
@@ -224,7 +193,6 @@
         <p>&copy; {{ datetime.now().year }} EasyTools. All Rights Reserved.</p>
     </footer>
 
-    <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
