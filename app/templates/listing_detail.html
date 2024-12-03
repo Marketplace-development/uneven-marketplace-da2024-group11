@@ -28,83 +28,30 @@
             border-radius: 10px;
             margin-bottom: 15px;
         }
-
-        .btn-primary {
-            display: inline-block;
-            margin-top: 20px;
-            background: linear-gradient(135deg, #2575fc, #6a11cb);
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 10px 20px;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: translateY(-3px);
-        }
-
-        .back-btn {
-            display: inline-block;
-            margin-top: 20px;
-            background: #ddd;
-            color: #333;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .back-btn:hover {
-            background: #ccc;
-            transform: translateY(-2px);
-        }
-
-        /* Styling for the reviews section */
         .reviews-container {
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
-            background-color: #f9f9f9;
-        }
-
-        .review {
-            border: 1px solid #ddd; /* Add border around each review */
-            border-radius: 8px; /* Round the corners of each review box */
-            padding: 15px;
-            margin-bottom: 15px; /* Space between reviews */
             background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-top: 15px;
         }
-
-        .review p {
-            margin: 5px 0;
+        .review {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
         }
-
-        .review-rating {
-            display: inline-block;
-            width: 48%;
-            vertical-align: top;
+        .review:last-child {
+            border-bottom: none;
         }
-
-        .review-date {
-            display: inline-block;
-            width: 48%;
-            text-align: right;
-            vertical-align: top;
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 15px 0;
+            margin-top: 30px;
         }
-
-        .review-comment {
-            margin-top: 5px;
-            width: 100%;
-            margin-left: 0;
+        footer p {
+            margin: 0;
         }
-
     </style>
 </head>
 <body>
@@ -123,47 +70,48 @@
                 </ul>
             </div>
         </div>
-        
-        {% if listing.image_path %}
-            <img src="{{ url_for('static', filename='uploads/' + listing.image_path.split('/')[-1]) }}" class="listing-image" alt="{{ listing.name_tool }}">
-        {% endif %}
+    </nav>
 
-        <p><strong>Brand:</strong> {{ listing.brand or 'N/A' }}</p>
-        <p><strong>Condition:</strong> {{ listing.condition or 'N/A' }}</p>
-        <p><strong>Battery Included:</strong> {{ 'Yes' if listing.battery_included else 'No' }}</p>
-        <p><strong>Product Code:</strong> {{ listing.product_code or 'N/A' }}</p>
-        <p><strong>Price:</strong> ${{ "%.2f"|format(listing.price_set_by_provider) }}</p>
-        <p><strong>Availability:</strong> {{ 'Available' if listing.availability else 'Not Available' }}</p>
-        <p><strong>Provider ID:</strong> {{ listing.provider_id }}</p>
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="card">
+            <h1 class="card-title text-center mb-4">{{ listing.name_tool }}</h1>
+            {% if listing.image_path %}
+                <img src="{{ url_for('static', filename='uploads/' + listing.image_path.split('/')[-1]) }}" class="listing-image" alt="{{ listing.name_tool }}">
+            {% endif %}
+            <p><strong>Brand:</strong> {{ listing.brand or 'N/A' }}</p>
+            <p><strong>Condition:</strong> {{ listing.condition or 'N/A' }}</p>
+            <p><strong>Battery Included:</strong> {{ 'Yes' if listing.battery_included else 'No' }}</p>
+            <p><strong>Product Code:</strong> {{ listing.product_code or 'N/A' }}</p>
+            <p><strong>Price:</strong> ${{ "%.2f"|format(listing.price_set_by_provider) }}</p>
+            <p><strong>Availability:</strong> {{ 'Available' if listing.availability else 'Not Available' }}</p>
 
-        {% if listing.reviews %}
-            <div class="reviews-container">
-                <h3>Reviews:</h3>
+            <!-- Buttons Row -->
+            <div class="d-flex justify-content-center mt-4">
+                {% if listing.availability %}
+                    <form action="{{ url_for('main.buy_listing', listing_id=listing.listing_id) }}" method="post" class="me-2">
+                        <button type="submit" class="btn btn-primary px-5 py-2">Rent This Tool</button>
+                    </form>
+                {% endif %}
+                <a href="{{ url_for('main.listings') }}" class="btn btn-secondary px-5 py-2">Back to Listings</a>
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="reviews-container mt-4">
+            <h3>Reviews:</h3>
+            {% if listing.reviews %}
                 {% for review in listing.reviews %}
                     <div class="review">
-                        <div class="review-rating">
-                            <strong>Rating:</strong> {{ review.rating }} / 5
-                        </div>
-                        <div class="review-date">
-                            <strong>Date:</strong> {{ review.date.strftime('%Y-%m-%d') }}
-                        </div>
-                        <div class="review-comment">
-                            <strong>Comment:</strong> {{ review.comment or 'No comment provided' }}
-                        </div>
+                        <p><strong>Rating:</strong> {{ review.rating }} / 5</p>
+                        <p><strong>Date:</strong> {{ review.date.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Comment:</strong> {{ review.comment or 'No comment provided' }}</p>
                     </div>
                 {% endfor %}
-            </div>
-        {% else %}
-            <p><strong>Reviews:</strong> No reviews yet.</p>
-        {% endif %}
-
-        {% if listing.availability %}
-            <form action="{{ url_for('main.buy_listing', listing_id=listing.listing_id) }}" method="post">
-                <button type="submit" class="btn-primary">Buy This Tool</button>
-            </form>
-        {% endif %}
-        
-        <a href="{{ url_for('main.listings') }}" class="back-btn">Back to Listings</a>
+            {% else %}
+                <p>No reviews yet.</p>
+            {% endif %}
+        </div>
     </div>
 
     <footer class="text-center">
@@ -173,3 +121,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
