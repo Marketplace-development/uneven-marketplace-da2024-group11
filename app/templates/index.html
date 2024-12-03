@@ -91,10 +91,6 @@
                                         <strong>{{ listing.name_tool }}</strong> - ${{ "%.2f"|format(listing.price_set_by_provider) }}<br>
                                         <em>Status:</em> {{ 'Available' if listing.availability else 'Rented' }}
                                     </span>
-                                    <!-- Delete Button -->
-                                    <form action="{{ url_for('main.delete_product', listing_id=listing.listing_id) }}" method="POST" style="display:inline;">
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this listing?')">Delete</button>
-                                    </form>
                                 </li>
                             {% endfor %}
                         </ul>
