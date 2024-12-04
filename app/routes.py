@@ -98,8 +98,11 @@ def add_listing():
         return redirect(url_for('main.login'))
 
     if request.method == 'POST':
-        listing_name = request.form.get('listing_name')
-        brand = request.form.get('brand')
+        # Haal de invoer uit het formulier
+        listing_name = request.form.get('listing_name')  # Dropdown Tool Name
+        other_tool = request.form.get('other_tool')      # Specify Tool Name
+        brand = request.form.get('brand')               # Dropdown Brand
+        other_brand = request.form.get('other_brand')   # Specify Brand
         condition = request.form.get('condition')
         battery_included = request.form.get('battery_included') == 'True'
         product_code = request.form.get('product_code')
@@ -107,6 +110,14 @@ def add_listing():
         availability = request.form.get('availability') == 'True'
         provider_id = session['phone_number']
 
+        # Controleer of "Other" is geselecteerd en gebruik de gespecificeerde invoer
+        if listing_name == 'other':
+            listing_name = other_tool  # Gebruik de waarde van "Specify Tool Name"
+
+        if brand == 'Other':
+            brand = other_brand  # Gebruik de waarde van "Specify Brand"
+
+        # Controleer op fouten
         errors = []
         if not listing_name:
             errors.append("Listing name is required.")
@@ -126,6 +137,7 @@ def add_listing():
         if errors:
             return render_template('add_listing.html', errors=errors)
 
+        # Haal provider op of maak een nieuwe aan
         provider = Provider.query.filter_by(providerp=provider_id).first()
         if not provider:
             provider = Provider(providerp=provider_id, premium_provider=False)
@@ -137,6 +149,7 @@ def add_listing():
                 errors.append("Failed to create provider. Please try again.")
                 return render_template('add_listing.html', errors=errors)
 
+        # Maak een nieuwe listing
         new_listing = Listing(
             name_tool=listing_name,
             brand=brand,
@@ -159,6 +172,8 @@ def add_listing():
             return render_template('add_listing.html', errors=errors)
 
     return render_template('add_listing.html')
+
+
 
 @main.route('/remove-listing/<int:listing_id>', methods=['POST'])
 def remove_listing(listing_id):

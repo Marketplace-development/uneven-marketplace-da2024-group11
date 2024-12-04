@@ -24,20 +24,25 @@
                             <option value="schuurmachine">Schuurmachine</option>
                             <option value="freesmachine">Freesmachine</option>
                             <option value="vijsmachine">Vijsmachine</option>
-                            <!-- Voeg meer opties toe indien nodig -->
-                            <option value="other">Other</option>
+                            <option value="cementmixer">Cementmixer</option>
+                            <option value="hogedrukreiniger">Hogedrukreiniger</option>
+                            <option value="ladder">Ladder</option>
+                            <option value="betonboor">Betonboor</option>
+                            <option value="hamerboor">Hamerboor</option>
+                            <option value="cementmixer">Cementmixer</option>
+                            <option value="hogedrukreiniger">Hogedrukreiniger</option>
+                            <option value="ladder">Ladder</option>
+                            <option value="betonboor">Betonboor</option>
+                            <option value="grasmachine">Grasmachine</option>
                         </select>
                     </div>
-                    <!-- Other Tool Name Input -->
-                    <div class="mb-3" id="other_tool_div" style="display: none;">
-                        <label for="other_tool" class="form-label">Specify Tool Name</label>
-                        <input type="text" class="form-control" id="other_tool" name="other_tool">
-                    </div>
-                    <!-- Aangepast Brand veld met opties -->
-                    <div class="mb-3">
-                        <label for="brand" class="form-label">Brand</label>
-                        <select class="form-control" id="brand" name="brand">
-                            <option value="">Select Brand</option>
+                            <!-- Voeg meer opties toe indien nodig -->
+                           
+                   <!-- Aangepast Brand veld met opties -->
+                   <div class="mb-3">
+                    <label for="brand" class="form-label">Brand</label>
+                    <select class="form-control" id="brand" name="brand">
+                        <option value="">Select Brand</option>
                             <!-- Internationale merken -->
                             <option value="Bosch">Bosch</option>
                             <option value="Makita">Makita</option>
@@ -51,15 +56,9 @@
                             <option value="Bahco">Bahco</option>
                             <!-- Belgische merken -->
                             <option value="Ergotools">Ergotools</option>
-                            <option value="Vynckier Tools">Vynckier Tools</option>
-                            <!-- Optie voor andere merken -->
-                            <option value="Other">Other</option>
+                            <option value="Vynckier Tools">Vynckier
+                            <!-- Voeg meer merken toe -->
                         </select>
-                    </div>
-                    <!-- Other Brand Input -->
-                    <div class="mb-3" id="other_brand_div" style="display: none;">
-                        <label for="other_brand" class="form-label">Specify Brand</label>
-                        <input type="text" class="form-control" id="other_brand" name="other_brand">
                     </div>
                     <!-- Rest van het formulier blijft hetzelfde -->
                     <div class="mb-3">
@@ -146,26 +145,5 @@
     </div>
     <!-- Bootstrap JavaScript en aangepaste script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
-        // JavaScript om het 'Other Tool Name' invoerveld te tonen/verbergen
-        document.getElementById('name_tool').addEventListener('change', function () {
-            var otherToolDiv = document.getElementById('other_tool_div');
-            if (this.value === 'other') {
-                otherToolDiv.style.display = 'block';
-            } else {
-                otherToolDiv.style.display = 'none';
-            }
-        });
-
-        // JavaScript om het 'Other Brand' invoerveld te tonen/verbergen
-        document.getElementById('brand').addEventListener('change', function () {
-            var otherBrandDiv = document.getElementById('other_brand_div');
-            if (this.value === 'Other') {
-                otherBrandDiv.style.display = 'block';
-            } else {
-                otherBrandDiv.style.display = 'none';
-            }
-        });
-    </script>
 </body>
 </html>
