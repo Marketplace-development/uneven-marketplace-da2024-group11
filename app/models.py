@@ -35,6 +35,7 @@ class Listing(db.Model):
     price_set_by_provider = db.Column('PriceSetByProvider', db.Numeric, nullable=True)
     availability = db.Column('Availability', db.Boolean, nullable=True)
     provider_id = db.Column('ProviderID', db.BigInteger, db.ForeignKey('Provider.providerp'), nullable=False)
+    photo_path = db.Column('photo_path', db.String(255), nullable=True)
     provider = db.relationship('Provider', back_populates='listings')
     reviews = db.relationship('Review', back_populates='listing')
     transactions = db.relationship('Transaction', back_populates='listing')

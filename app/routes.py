@@ -99,26 +99,26 @@ def add_listing():
         return redirect(url_for('main.login'))
 
     if request.method == 'POST':
-        # Haal de invoer uit het formulier
-        listing_name = request.form.get('listing_name')  # Dropdown Tool Name
-        other_tool = request.form.get('other_tool')      # Specify Tool Name
-        brand = request.form.get('brand')               # Dropdown Brand
-        other_brand = request.form.get('other_brand')   # Specify Brand
-        condition = request.form.get('condition')
-        battery_included = request.form.get('battery_included') == 'True'
-        product_code = request.form.get('product_code')
-        price = request.form.get('price')
-        availability = request.form.get('availability') == 'True'
-        provider_id = session['phone_number']
+        # Haal gegevens uit het formulier
+        listing_name = request.form.get('listing_name')  # Naam van de tool
+        other_tool = request.form.get('other_tool')      # Alternatieve toolnaam
+        brand = request.form.get('brand')               # Merk van de tool
+        other_brand = request.form.get('other_brand')   # Alternatief merk
+        condition = request.form.get('condition')       # Conditie van de tool
+        battery_included = request.form.get('battery_included') == 'True'  # Accu inbegrepen
+        product_code = request.form.get('product_code')  # Productcode
+        price = request.form.get('price')               # Prijs ingesteld door provider
+        availability = request.form.get('availability') == 'True'  # Beschikbaarheid
+        photo_path = request.form.get('photo_path')     # Pad naar de foto
+        provider_phone = session['phone_number']        # Huidige gebruiker als provider
 
-        # Controleer of "Other" is geselecteerd en gebruik de gespecificeerde invoer
+        # Gebruik alternatieve invoer als "Other" is geselecteerd
         if listing_name == 'other':
-            listing_name = other_tool  # Gebruik de waarde van "Specify Tool Name"
-
+            listing_name = other_tool
         if brand == 'Other':
-            brand = other_brand  # Gebruik de waarde van "Specify Brand"
+            brand = other_brand
 
-        # Controleer op fouten
+        # Validatie van invoer
         errors = []
         if not listing_name:
             errors.append("Listing name is required.")
@@ -138,10 +138,10 @@ def add_listing():
         if errors:
             return render_template('add_listing.html', errors=errors)
 
-        # Haal provider op of maak een nieuwe aan
-        provider = Provider.query.filter_by(providerp=provider_id).first()
+        # Haal de provider op (of maak een nieuwe aan als deze niet bestaat)
+        provider = Provider.query.filter_by(providerp=provider_phone).first()
         if not provider:
-            provider = Provider(providerp=provider_id, premium_provider=False)
+            provider = Provider(providerp=provider_phone, premium_provider=False)
             db.session.add(provider)
             try:
                 db.session.commit()
@@ -150,7 +150,7 @@ def add_listing():
                 errors.append("Failed to create provider. Please try again.")
                 return render_template('add_listing.html', errors=errors)
 
-        # Maak een nieuwe listing
+        # Maak een nieuwe listing aan
         new_listing = Listing(
             name_tool=listing_name,
             brand=brand,
@@ -159,21 +159,24 @@ def add_listing():
             product_code=product_code,
             price_set_by_provider=price,
             availability=availability,
-            provider_id=provider_id
+            provider_id=provider.providerp,  # Verwijzing naar de provider
+            photo_path=photo_path  # Optioneel fotopad
         )
 
+        # Probeer de nieuwe listing op te slaan in de database
         try:
             db.session.add(new_listing)
             db.session.commit()
             flash("Listing added successfully!", "success")
-            return redirect(url_for('main.listings'))
+            return redirect(url_for('main.listings'))  # Verwijst naar de lijstpagina
         except Exception as e:
             db.session.rollback()
             flash("There was an error adding the listing.", "error")
+            errors.append(str(e))  # Voeg foutdetails toe
             return render_template('add_listing.html', errors=errors)
 
+    # Bij GET, toon het formulier
     return render_template('add_listing.html')
-
 
 
 @main.route('/remove-listing/<int:listing_id>', methods=['POST'])
