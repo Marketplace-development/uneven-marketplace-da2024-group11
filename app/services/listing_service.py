@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func
 from app.models import Listing, Review  # Gebruik een absolute import die verwijst naar de app-module
 
 def search_and_filter_listings(session: Session, filters: dict, sort_by: str = None, ascending: bool = True, page: int = 1, page_size: int = 10):
@@ -35,14 +35,17 @@ def search_and_filter_listings(session: Session, filters: dict, sort_by: str = N
         else:
             query = query.order_by(Listing.price_set_by_provider.desc())
     elif sort_by == 'rating':
-        query = query.join(Review, Review.listing_id == Listing.listing_id)
-        if ascending:
-            query = query.order_by(Review.rating.asc())
+        # Join Review and calculate average rating
+        query = query.outerjoin(Review, Review.listing_id == Listing.listing_id)
+        query = query.group_by(Listing.listing_id)
+        # Sort highest rating first (descending by default)
+        if not ascending:
+            query = query.order_by(func.avg(Review.rating).desc())
         else:
-            query = query.order_by(Review.rating.desc())
+            query = query.order_by(func.avg(Review.rating).asc())
     elif sort_by == 'date':
         if ascending:
-            query = query.order_by(Listing.listing_id.asc())  # Hier moet mogelijk een kolom zijn die de datum van aanmaak aangeeft
+            query = query.order_by(Listing.listing_id.asc())  # Gebruik een 'created_at' kolom als beschikbaar
         else:
             query = query.order_by(Listing.listing_id.desc())
 

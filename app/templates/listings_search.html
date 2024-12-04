@@ -12,20 +12,42 @@
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        h1, h2 {
-            color: #343a40;
+        .dropdown-toggle {
+            border-radius: 30px;
+            background-color: #00bfff;
+            color: white;
+            padding: 10px 20px;
+        }
+        .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary, .btn-info {
+            border-radius: 50px;
+        }
+        .search-container {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
         .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-radius: 10px;
             margin-bottom: 10px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .list-group-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .btn-primary, .btn-info, .btn-danger, .btn-warning {
-            border-radius: 50px;
+        .details-btn {
+            margin-left: auto;
+            border-radius: 20px;
+            font-size: 0.9rem;
         }
         footer {
             background-color: #343a40;
@@ -35,48 +57,35 @@
         footer p {
             margin: 0;
         }
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
     </style>
-    
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <!-- Navbar Brand -->
             <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                    aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <div class="dropdown">
-                            <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                {% if username %}
-                                    Welcome, <strong>{{ username }}</strong>
-                                {% else %}
-                                    Pages
-                                {% endif %}
+                            <button class="btn dropdown-toggle text-white" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span style="color: black; font-weight: normal;">Welcome, <span class="fw-bold">{{ username }}</span></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                {% if username %}
-                                    <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.listings') }}">View All Products</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
-                                            <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
-                                        </form>
-                                    </li>
-                                {% else %}
-                                    <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
-                                {% endif %}
+                                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.listings') }}">View All Products</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-white" href="{{ url_for('main.logout') }}" style="background-color: #ff4c4c; border-radius: 8px;">Logout</a></li>
                             </ul>
                         </div>
                     </li>
@@ -90,13 +99,41 @@
         <h3 class="text-center">Search Filters</h3>
         <form action="/listings/search" method="get">
             <div class="row">
+                <!-- Dropdown for Tool Name -->
                 <div class="col-md-6 mb-3">
                     <label for="name_tool" class="form-label">Tool Name</label>
-                    <input type="text" class="form-control" id="name_tool" name="name_tool" placeholder="Enter tool name" value="{{ request.args.get('name_tool', '') }}">
+                    <select class="form-control" id="name_tool" name="name_tool">
+                        <option value="">Select Tool</option>
+                        <option value="boormachine" {% if request.args.get('listing_name') == 'boormachine' %}selected{% endif %}>Boormachine</option>
+                        <option value="zaagmachine" {% if request.args.get('listing_name') == 'zaagmachine' %}selected{% endif %}>Zaagmachine</option>
+                        <option value="schuurmachine" {% if request.args.get('listing_name') == 'schuurmachine' %}selected{% endif %}>Schuurmachine</option>
+                        <option value="freesmachine" {% if request.args.get('listing_name') == 'freesmachine' %}selected{% endif %}>Freesmachine</option>
+                        <option value="vijsmachine" {% if request.args.get('listing_name') == 'vijsmachine' %}selected{% endif %}>Vijsmachine</option>
+                        <option value="cementmixer" {% if request.args.get('listing_name') == 'cementmixer' %}selected{% endif %}>Cementmixer</option>
+                        <option value="hogedrukreiniger" {% if request.args.get('listing_name') == 'hogedrukreiniger' %}selected{% endif %}>Hogedrukreiniger</option>
+                        <option value="ladder" {% if request.args.get('listing_name') == 'ladder' %}selected{% endif %}>Ladder</option>
+                        <option value="betonboor" {% if request.args.get('listing_name') == 'betonboor' %}selected{% endif %}>Betonboor</option>
+                        <option value="grasmachine" {% if request.args.get('listing_name') == 'grasmachine' %}selected{% endif %}>Grasmachine</option>
+                    </select>                    
                 </div>
+                <!-- Dropdown for Brand -->
                 <div class="col-md-6 mb-3">
                     <label for="brand" class="form-label">Brand</label>
-                    <input type="text" class="form-control" id="brand" name="brand" placeholder="Enter brand" value="{{ request.args.get('brand', '') }}">
+                    <select class="form-control" id="brand" name="brand">
+                        <option value="">Select Brand</option>
+                        <option value="Bosch">Bosch</option>
+                        <option value="Makita">Makita</option>
+                        <option value="DeWalt">DeWalt</option>
+                        <option value="Metabo">Metabo</option>
+                        <option value="Stanley">Stanley</option>
+                        <option value="Milwaukee">Milwaukee</option>
+                        <option value="Hilti">Hilti</option>
+                        <option value="Festool">Festool</option>
+                        <option value="Knipex">Knipex</option>
+                        <option value="Bahco">Bahco</option>
+                        <option value="Ergotools">Ergotools</option>
+                        <option value="Vynckier Tools">Vynckier Tools</option>
+                    </select>
                 </div>
             </div>
             <div class="row">
@@ -124,17 +161,13 @@
                 <div class="col-md-4 mb-3">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="battery_included" name="battery_included" {% if request.args.get('battery_included') %}checked{% endif %}>
-                        <label class="form-check-label" for="battery_included">
-                            Battery Included
-                        </label>
+                        <label class="form-check-label" for="battery_included">Battery Included</label>
                     </div>
                 </div>
                 <div class="col-md-4 mb-3">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="availability" name="availability" {% if request.args.get('availability') %}checked{% endif %}>
-                        <label class="form-check-label" for="availability">
-                            Available Now
-                        </label>
+                        <label class="form-check-label" for="availability">Available Now</label>
                     </div>
                 </div>
                 <div class="col-md-4 mb-3">
@@ -162,7 +195,20 @@
                             <strong>{{ listing.name_tool }}</strong> - ${{ "%.2f"|format(listing.price_set_by_provider) }}
                             <br>
                             <span>Brand: {{ listing.brand }}</span><br>
-                            <span>Condition: {{ listing.condition }}</span>
+                            <span>Condition: {{ listing.condition }}</span><br>
+                            {% if listing.reviews|length > 0 %}
+                                {% set average_rating = (listing.reviews | map(attribute='rating') | sum) / listing.reviews|length %}
+                                <p>Average Rating: 
+                                    {% for star in range(average_rating|round(0, 'floor')|int) %}
+                                        &#9733;
+                                    {% endfor %}
+                                    {% for star in range(5 - average_rating|round(0, 'floor')|int) %}
+                                        &#9734;
+                                    {% endfor %}
+                                </p>
+                            {% else %}
+                                <p>Average Rating: Not yet rated</p>
+                            {% endif %}
                         </div>
                         <a href="{{ url_for('main.listing_detail', id=listing.listing_id) }}" class="btn btn-info btn-sm details-btn">View Details</a>
                     </li>
@@ -187,18 +233,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
