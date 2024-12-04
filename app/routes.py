@@ -187,16 +187,17 @@ def remove_listing(listing_id):
         flash("You are not authorized to remove this listing.", "error")
         return redirect(url_for('main.index'))
 
-    listing.availability = False
-
     try:
+        db.session.delete(listing)
         db.session.commit()
         flash("The listing has been removed from your dashboard.", "success")
     except Exception as e:
         db.session.rollback()
         flash("There was an error removing the listing.", "error")
 
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.profile'))
+
+
 
 @main.route('/listing/<int:id>')
 def listing_detail(id):
@@ -322,12 +323,15 @@ def profile():
 
     user = User.query.filter_by(phone_number=session['phone_number']).first_or_404()
     transactions = Transaction.query.filter_by(customer_phone=user.phone_number).all()
+    # Ophalen van alle producten van de ingelogde gebruiker
+    listings = Listing.query.filter_by(provider_id=user.phone_number).all()
 
     reviews = None
     if hasattr(user, 'provider'):
         reviews = user.provider.reviews
 
-    return render_template('profile.html', user=user, username=user.username, transactions=transactions, reviews=reviews)
+    return render_template('profile.html', user=user, username=user.username, listings=listings, transactions=transactions, reviews=reviews)
+
 
 
 

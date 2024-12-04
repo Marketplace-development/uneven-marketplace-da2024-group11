@@ -38,6 +38,45 @@
         footer p {
             margin: 0;
         }
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #007bff;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .button-group .btn {
+            flex-shrink: 0;
+        }
+        .profile-section {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 1.75rem;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .listings-section {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .no-products {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -93,32 +132,86 @@
             <div class="row">
                 <!-- Profile Information -->
                 <div class="col-md-6 mb-4">
-                    <h2 class="mb-4">Your Profile Information</h2>
-                    <ul class="list-group">
-                        <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
-                        <li class="list-group-item"><strong>Phone Number:</strong> {{ user.phone_number }}</li>
-                        <li class="list-group-item"><strong>Address:</strong> {{ user.address }}</li>
-                        <li class="list-group-item"><strong>Postal Code:</strong> {{ user.postal_code }}</li>
-                        <li class="list-group-item"><strong>City:</strong> {{ user.city }}</li>
-                        <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
-                    </ul>
+                    <div class="profile-section">
+                        <h2 class="section-title">Your Profile Information</h2>
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+                            <li class="list-group-item"><strong>Phone Number:</strong> {{ user.phone_number }}</li>
+                            <li class="list-group-item"><strong>Address:</strong> {{ user.address }}</li>
+                            <li class="list-group-item"><strong>Postal Code:</strong> {{ user.postal_code }}</li>
+                            <li class="list-group-item"><strong>City:</strong> {{ user.city }}</li>
+                            <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- Transactions -->
-                <div class="col-md-6">
-                    <h2 class="mb-4">Your Transactions</h2>
-                    {% if transactions %}
-                        <ul class="list-group">
-                            {% for transaction in transactions %}
-                                <li class="list-group-item">
-                                    <strong>Tool Name:</strong> {{ transaction.listing.name_tool }}<br>
-                                    <strong>Purchased On:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>You have no transactions yet.</p>
-                    {% endif %}
+                <!-- Your Products and Your Rented Tools Side by Side -->
+                <div class="col-md-6 mb-4">
+                    <div class="row">
+                        <!-- Your Products -->
+                        <div class="col-md-12 mb-4">
+                            <div class="listings-section">
+                                <div class="content-header">
+                                    <h2>Your Products</h2>
+                                    <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary btn-sm">Add Products</a>
+                                </div>
+                                {% if listings %}
+                                    <ul class="list-group">
+                                        {% for listing in listings %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>
+                                                    <strong>{{ listing.name_tool }}</strong> - ${{ "%.2f"|format(listing.price_set_by_provider) }}<br>
+                                                    <em>Status:</em> {{ 'Available' if listing.availability else 'Rented' }}
+                                                </span>
+                                                <div>
+                                                    <form action="{{ url_for('main.remove_listing', listing_id=listing.listing_id) }}" method="POST" class="d-inline">
+                                                        <button class="btn btn-danger btn-sm">Remove</button>
+                                                    </form>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="no-products">No products available. <a href="{{ url_for('main.add_listing') }}">Add your first product</a>.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Your Rented Tools -->
+                        <div class="col-md-12">
+                            <div class="listings-section">
+                                <div class="content-header">
+                                    <h2>Your Rented Tools</h2>
+                                </div>
+                                {% if transactions %}
+                                    <ul class="list-group">
+                                        {% set seen_listings = [] %}
+                                        {% for transaction in transactions|sort(attribute='date', reverse=True) %}
+                                            {% if transaction.listing.listing_id not in seen_listings %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>
+                                                        <strong>Tool:</strong> {{ transaction.listing.name_tool }}<br>
+                                                        <strong>Rented On:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}
+                                                    </span>
+                                                    <div class="button-group">
+                                                        {% if not transaction.listing.availability %}
+                                                            <form action="{{ url_for('main.make_available_again', listing_id=transaction.listing.listing_id) }}" method="POST" class="d-inline">
+                                                                <button class="btn btn-warning btn-sm">Return</button>
+                                                            </form>
+                                                        {% endif %}
+                                                        <a href="{{ url_for('main.add_review', listing_id=transaction.listing.listing_id) }}" class="btn btn-danger btn-sm">Review</a>
+                                                    </div>
+                                                </li>
+                                                {% set seen_listings = seen_listings.append(transaction.listing.listing_id) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="no-products">No rented tools found.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% else %}
