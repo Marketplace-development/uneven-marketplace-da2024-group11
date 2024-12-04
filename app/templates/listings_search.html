@@ -12,42 +12,20 @@
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .dropdown-toggle {
-            border-radius: 30px;
-            background-color: #00bfff;
-            color: white;
-            padding: 10px 20px;
-        }
-        .dropdown-menu {
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .btn-primary, .btn-info {
-            border-radius: 50px;
-        }
-        .search-container {
-            margin-top: 50px;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        h1, h2 {
+            color: #343a40;
         }
         .list-group-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             border-radius: 10px;
             margin-bottom: 10px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .list-group-item:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .details-btn {
-            margin-left: auto;
-            border-radius: 20px;
-            font-size: 0.9rem;
+        .btn-primary, .btn-info, .btn-danger, .btn-warning {
+            border-radius: 50px;
         }
         footer {
             background-color: #343a40;
@@ -57,36 +35,48 @@
         footer p {
             margin: 0;
         }
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
     </style>
+    
 </head>
 <body>
     <!-- Navbar -->
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
+            <!-- Navbar Brand -->
             <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <div class="dropdown">
-                            <button class="btn dropdown-toggle text-white" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #00bfff; border-radius: 15px; padding: 10px 15px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);">
-                                <span style="color: black; font-weight: normal;">Welcome, <span class="fw-bold">{{ username }}</span></span>
+                            <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if username %}
+                                    Welcome, <strong>{{ username }}</strong>
+                                {% else %}
+                                    Pages
+                                {% endif %}
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="padding: 10px; border-radius: 15px;">
-                                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.listings') }}">View All Products</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-white" href="{{ url_for('main.logout') }}" style="background-color: #ff4c4c; border-radius: 8px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #c9302c;">Logout</a></li>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                {% if username %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.listings') }}">View All Products</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
+                                            <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
+                                        </form>
+                                    </li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
+                                {% endif %}
                             </ul>
                         </div>
                     </li>
