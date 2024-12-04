@@ -274,6 +274,7 @@ def pricing():
 def listings():
     all_listings = Listing.query.filter_by(availability=True).all()
     return render_template('listings.html', listings=all_listings)
+    #aaaa
 
 @main.route('/listings/search', methods=['GET'])
 def search_listings():
