@@ -55,12 +55,13 @@
         }
         .content-section {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             gap: 2rem;
+            flex-wrap: wrap;
         }
         .content-column {
             flex: 1;
-            min-width: 300px;
+            max-width: 500px;
         }
         .content-header {
             display: flex;
@@ -74,6 +75,15 @@
             margin: 0;
             font-size: 1.5rem;
             color: #343a40;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .button-group .btn {
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -169,13 +179,13 @@
                                     <strong>Tool:</strong> {{ transaction.listing.name_tool }}<br>
                                     <strong>Rented On:</strong> {{ transaction.date.strftime('%Y-%m-%d %H:%M:%S') }}
                                 </span>
-                                <div>
+                                <div class="button-group">
                                     {% if not transaction.listing.availability %}
                                         <form action="{{ url_for('main.make_available_again', listing_id=transaction.listing.listing_id) }}" method="POST" class="d-inline">
                                             <button class="btn btn-warning btn-sm">Return</button>
                                         </form>
                                     {% endif %}
-                                    <a href="{{ url_for('main.add_review', listing_id=transaction.listing.listing_id) }}" class="btn btn-danger btn-sm ms-2">Review</a>
+                                    <a href="{{ url_for('main.add_review', listing_id=transaction.listing.listing_id) }}" class="btn btn-danger btn-sm">Review</a>
                                 </div>
                             </li>
                             {% set seen_listings = seen_listings.append(transaction.listing.listing_id) %}
