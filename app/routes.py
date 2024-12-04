@@ -24,7 +24,6 @@ def index():
 def login():
     if request.method == 'POST':
         phone_number = request.form.get('phone_number')
-
         if not phone_number:
             flash("Phone number is required.", "error")
             return redirect(url_for('main.login'))
@@ -35,9 +34,11 @@ def login():
             return redirect(url_for('main.login'))
 
         session['phone_number'] = user.phone_number
+        session['username'] = user.username
         return redirect(url_for('main.index'))
 
     return render_template('login.html')
+
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -307,12 +308,11 @@ def profile():
     user = User.query.filter_by(phone_number=session['phone_number']).first_or_404()
     transactions = Transaction.query.filter_by(customer_phone=user.phone_number).all()
 
-    # Fetch reviews if the user is also a provider
     reviews = None
     if hasattr(user, 'provider'):
         reviews = user.provider.reviews
 
-    return render_template('profile.html', user=user, transactions=transactions, reviews=reviews)
+    return render_template('profile.html', user=user, username=user.username, transactions=transactions, reviews=reviews)
 
 
 
@@ -391,8 +391,12 @@ def add_review(listing_id):
     return render_template('add_review.html', listing=listing)
 
 @main.context_processor
-def inject_datetime():
-    return {'datetime': datetime}
-
+def inject_globals():
+    username = None
+    if 'phone_number' in session:
+        user = User.query.filter_by(phone_number=session['phone_number']).first()
+        if user:
+            username = user.username
+    return {'username': username, 'datetime': datetime}
 
 
