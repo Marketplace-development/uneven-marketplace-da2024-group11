@@ -17,8 +17,32 @@ def index():
         user = User.query.filter_by(phone_number=session['phone_number']).first_or_404()
         listings = Listing.query.filter_by(provider_id=user.phone_number, availability=True).all()
         transactions = Transaction.query.filter_by(customer_phone=user.phone_number).all()
-        return render_template('index.html', username=user.username, listings=listings, transactions=transactions)
-    return render_template('index.html')
+
+        # Voeg hier de code toe om de top 3 populairste producten op te halen
+        results = calculate_popularity(db.session)
+        top_3_listings = results[:3]
+
+        # Vorm de resultaten om in een lijst van dictionaries voor gemakkelijker gebruik in de template
+        popular_listings = [{
+            "ListingID": row.listing_id,
+            "NameTool": row.name_tool,
+            "AverageRating": row.gemiddelde_beoordeling,
+        } for row in top_3_listings]
+
+        return render_template('index.html', username=user.username, listings=listings, transactions=transactions, popular_listings=popular_listings)
+
+    # Haal ook de top 3 populaire tools op wanneer de gebruiker niet ingelogd is
+    results = calculate_popularity(db.session)
+    top_3_listings = results[:3]
+
+    popular_listings = [{
+        "ListingID": row.listing_id,
+        "NameTool": row.name_tool,
+        "AverageRating": row.gemiddelde_beoordeling,
+    } for row in top_3_listings]
+
+    return render_template('index.html', popular_listings=popular_listings)
+
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
