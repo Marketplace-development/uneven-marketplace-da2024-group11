@@ -133,16 +133,16 @@
                     <label for="name_tool" class="form-label">Tool Name</label>
                     <select class="form-control" id="name_tool" name="name_tool">
                         <option value="">Select Tool</option>
-                        <option value="boormachine" {% if request.args.get('listing_name') == 'boormachine' %}selected{% endif %}>Boormachine</option>
-                        <option value="zaagmachine" {% if request.args.get('listing_name') == 'zaagmachine' %}selected{% endif %}>Zaagmachine</option>
-                        <option value="schuurmachine" {% if request.args.get('listing_name') == 'schuurmachine' %}selected{% endif %}>Schuurmachine</option>
-                        <option value="freesmachine" {% if request.args.get('listing_name') == 'freesmachine' %}selected{% endif %}>Freesmachine</option>
-                        <option value="vijsmachine" {% if request.args.get('listing_name') == 'vijsmachine' %}selected{% endif %}>Vijsmachine</option>
-                        <option value="cementmixer" {% if request.args.get('listing_name') == 'cementmixer' %}selected{% endif %}>Cementmixer</option>
-                        <option value="hogedrukreiniger" {% if request.args.get('listing_name') == 'hogedrukreiniger' %}selected{% endif %}>Hogedrukreiniger</option>
-                        <option value="ladder" {% if request.args.get('listing_name') == 'ladder' %}selected{% endif %}>Ladder</option>
-                        <option value="betonboor" {% if request.args.get('listing_name') == 'betonboor' %}selected{% endif %}>Betonboor</option>
-                        <option value="grasmachine" {% if request.args.get('listing_name') == 'grasmachine' %}selected{% endif %}>Grasmachine</option>
+                            <option value="drill" {% if request.args.get('listing_name') == 'drill' %}selected{% endif %}>Drill</option>
+                            <option value="saw" {% if request.args.get('listing_name') == 'saw' %}selected{% endif %}>Saw</option>
+                            <option value="sander" {% if request.args.get('listing_name') == 'sander' %}selected{% endif %}>Sander</option>
+                            <option value="milling_machine" {% if request.args.get('listing_name') == 'milling_machine' %}selected{% endif %}>Milling Machine</option>
+                            <option value="screwdriver" {% if request.args.get('listing_name') == 'screwdriver' %}selected{% endif %}>Screwdriver</option>
+                            <option value="cement_mixer" {% if request.args.get('listing_name') == 'cement_mixer' %}selected{% endif %}>Cement Mixer</option>
+                            <option value="pressure_washer" {% if request.args.get('listing_name') == 'pressure_washer' %}selected{% endif %}>Pressure Washer</option>
+                            <option value="ladder" {% if request.args.get('listing_name') == 'ladder' %}selected{% endif %}>Ladder</option>
+                            <option value="concrete_drill" {% if request.args.get('listing_name') == 'concrete_drill' %}selected{% endif %}>Concrete Drill</option>
+                            <option value="lawnmower" {% if request.args.get('listing_name') == 'lawnmower' %}selected{% endif %}>Lawnmower</option>
                     </select>                    
                 </div>
                 <!-- Dropdown for Brand -->
@@ -203,12 +203,12 @@
                     <label for="sort_by" class="form-label">Sort By</label>
                     <select class="form-control" id="sort_by" name="sort_by">
                         <option value="">No Sorting</option>
-                        <option value="price_asc" {% if request.args.get('sort_by') == 'price_asc' %}selected{% endif %}>Prijs: laag naar hoog</option>
-                        <option value="price_desc" {% if request.args.get('sort_by') == 'price_desc' %}selected{% endif %}>Prijs: hoog naar laag</option>
-                        <option value="rating_asc" {% if request.args.get('sort_by') == 'rating_asc' %}selected{% endif %}>Rating: laag naar hoog</option>
-                        <option value="rating_desc" {% if request.args.get('sort_by') == 'rating_desc' %}selected{% endif %}>Rating: hoog naar laag</option>
-                        <option value="date_asc" {% if request.args.get('sort_by') == 'date_asc' %}selected{% endif %}>Datum: oud naar nieuw</option>
-                        <option value="date_desc" {% if request.args.get('sort_by') == 'date_desc' %}selected{% endif %}>Datum: nieuw naar oud</option>
+                        <option value="price_asc" {% if request.args.get('sort_by') == 'price_asc' %}selected{% endif %}>Price: ascending</option>
+                        <option value="price_desc" {% if request.args.get('sort_by') == 'price_desc' %}selected{% endif %}>Price: descending</option>
+                        <option value="rating_asc" {% if request.args.get('sort_by') == 'rating_asc' %}selected{% endif %}>Rating: ascending</option>
+                        <option value="rating_desc" {% if request.args.get('sort_by') == 'rating_desc' %}selected{% endif %}>Rating: descending</option>
+                        <option value="date_asc" {% if request.args.get('sort_by') == 'date_asc' %}selected{% endif %}>Date: ascending</option>
+                        <option value="date_desc" {% if request.args.get('sort_by') == 'date_desc' %}selected{% endif %}>Date: descending</option>
                     </select>
                 </div>
             </div>
