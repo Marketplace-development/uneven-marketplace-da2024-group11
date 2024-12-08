@@ -323,15 +323,15 @@ def listings():
 def search_listings():
     filters = request.args.to_dict()  # Verzamelt filters vanuit URL parameters
     sort_by = request.args.get('sort_by', None)
-    ascending = request.args.get('ascending', 'true').lower() == 'true'
+    # ascending = request.args.get('ascending', 'true').lower() == 'true'  # Verwijder of uitcommentariëren
     page = int(request.args.get('page', 1))
-    page_size = int(request.args.get('page_size', 10))
+    page_size = int(request.args.get('page_size', 100))
 
-    # Gebruik de db.session voor de database interactie
-    results = search_and_filter_listings(db.session, filters, sort_by, ascending, page, page_size)
+    # Roep nu de functie aan zonder ascending
+    results = search_and_filter_listings(db.session, filters, sort_by, page=page, page_size=page_size)
 
-    # Render de HTML template en geef de resultaten door
     return render_template('listings_search.html', results=results, page=page, page_size=page_size)
+
 
 @main.route('/recommendations', methods=['GET'])
 def recommendations():

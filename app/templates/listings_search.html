@@ -203,9 +203,12 @@
                     <label for="sort_by" class="form-label">Sort By</label>
                     <select class="form-control" id="sort_by" name="sort_by">
                         <option value="">No Sorting</option>
-                        <option value="price" {% if request.args.get('sort_by') == 'price' %}selected{% endif %}>Price</option>
-                        <option value="rating" {% if request.args.get('sort_by') == 'rating' %}selected{% endif %}>Rating</option>
-                        <option value="date" {% if request.args.get('sort_by') == 'date' %}selected{% endif %}>Date</option>
+                        <option value="price_asc" {% if request.args.get('sort_by') == 'price_asc' %}selected{% endif %}>Prijs: laag naar hoog</option>
+                        <option value="price_desc" {% if request.args.get('sort_by') == 'price_desc' %}selected{% endif %}>Prijs: hoog naar laag</option>
+                        <option value="rating_asc" {% if request.args.get('sort_by') == 'rating_asc' %}selected{% endif %}>Rating: laag naar hoog</option>
+                        <option value="rating_desc" {% if request.args.get('sort_by') == 'rating_desc' %}selected{% endif %}>Rating: hoog naar laag</option>
+                        <option value="date_asc" {% if request.args.get('sort_by') == 'date_asc' %}selected{% endif %}>Datum: oud naar nieuw</option>
+                        <option value="date_desc" {% if request.args.get('sort_by') == 'date_desc' %}selected{% endif %}>Datum: nieuw naar oud</option>
                     </select>
                 </div>
             </div>
@@ -243,12 +246,6 @@
                     </li>
                 {% endfor %}
             </ul>
-            <div class="pagination-container mt-4">
-                {% if page > 1 %}
-                    <a href="?page={{ page - 1 }}" class="btn btn-secondary">Previous</a>
-                {% endif %}
-                <a href="?page={{ page + 1 }}" class="btn btn-secondary">Next</a>
-            </div>
         {% else %}
             <p class="text-muted">No results found.</p>
         {% endif %}
