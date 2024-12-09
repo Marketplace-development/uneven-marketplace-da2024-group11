@@ -1,24 +1,42 @@
 ### Marketplace Ideation
 
-Platform name: 
+Platform name: EasyTools
 
 Short description: 
+Our platform is designed to provide a simple, effective way for people in cities to rent tools from one another. The idea is straightforward: individuals who own tools they no longer use regularly can offer them for rent, while those who need tools for short-term projects can access them without the cost and commitment of buying.
+
+The platform addresses a common urban challenge. Many people own tools that are only used occasionally, yet these tools take up valuable storage space and represent a financial investment. At the same time, others might need a specific tool for a one-time job but find purchasing it impractical. By connecting these two groups, our platform promotes resource sharing and reduces unnecessary consumption.
+
+How It Works
+For Owners: People with unused tools can list them on the site, setting a rental price, availability, and conditions. This allows them to earn extra income while giving their tools a new purpose.
+For Renters: Those who need tools can browse listings, compare options, and rent what they need for a specific period. This is a cost-effective and convenient way to access equipment without having to store or maintain it.
+Why This Platform Matters
+Urban living often comes with constraints such as limited space and high costs. Purchasing tools for occasional use can be expensive, while storing them can be a challenge. Our platform encourages a shift away from individual ownership toward shared access, helping to make life more convenient and sustainable for city dwellers.
+
+Features and Benefits
+Ease of Use: The platform is designed to be intuitive and accessible for everyone.
+Safety and Trust: Secure payment options and user verification ensure a reliable experience.
+Local Connections: Users can find tools available in their immediate area, reducing travel and encouraging community interaction.
+A Step Toward Sustainability
+By facilitating tool sharing, our platform helps reduce waste, minimize overproduction, and promote the efficient use of resources. It’s a small but meaningful step toward building a circular economy where sharing replaces unnecessary consumption.
+
+We believe this concept has the potential to make a significant impact, both by providing a practical service and by encouraging more sustainable behavior in urban communities. Our goal is to create a tool rental platform that is as beneficial for its users as it is for the environment.
 
 # Taxonomy: Business Model
 
-User Type: Person | Organization
-Listing Kind: Good Transfer |Service
-Listing Type: Physical Good | Digital Good | Offline Serviced | Online Serviced
+User Type: Person
+Listing Kind: Good Transfer
+Listing Type: Physical Good
 Frequency: One-Time | Recurring
-Quantity: One | Many
-Price Discovery: Set by Provider | Set by Customer | Set by Market
+Quantity: One
+Price Discovery: Set by Provider
 Price Calculation: By Quantity | By Feature | Auction | Quote
 Conversation System: Listing Conversation | Transaction Conversation
-Review by: By Customer | By Provider
-Review of: Of Listing | Of Provider
-Trust and Safety: ID Verification | Badges | In-app reporting
-Revenue Stream: Subscription | Commission | Fixed Fee | Listing Fee
-Revenue Source: Customer | Provider
+Review by: By Customer
+Review of: Of Listing
+Trust and Safety: ID Verification
+Revenue Stream:Commission
+Revenue Source: Customer
 
 # Ontology model
 
