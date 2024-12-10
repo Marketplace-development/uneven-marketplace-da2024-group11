@@ -94,7 +94,7 @@
             <p><strong>Condition:</strong> {{ listing.condition or 'N/A' }}</p>
             <p><strong>Battery Included:</strong> {{ 'Yes' if listing.battery_included else 'No' }}</p>
             <p><strong>Product Code:</strong> {{ listing.product_code or 'N/A' }}</p>
-            <p><strong>Price:</strong> ${{ "%.2f"|format(listing.price_set_by_provider) }}</p>
+            <p><strong>Price per day:</strong> ${{ "%.2f"|format(listing.price_set_by_provider) }}</p>
             <p><strong>Availability:</strong> {{ 'Available' if listing.availability else 'Not Available' }}</p>
 
             <!-- Buttons Row -->
