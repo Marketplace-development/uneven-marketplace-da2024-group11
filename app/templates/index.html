@@ -322,19 +322,37 @@
             color: #0d6efd;
             margin-bottom: 3rem;
         }
-        .brand-logos img {
-            max-width: 100px;
-            margin: 1rem;
-            filter: grayscale(100%);
-            transition: filter 0.3s;
+        .brand-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem; /* Consistente ruimte tussen de logo's */
         }
-        .brand-logos img:hover {
-            filter: grayscale(0%);
+        .brand-logos .logo-box {
+            width: 180px; /* Standaard breedte voor elke box */
+            height: 120px; /* Standaard hoogte voor elke box */
+            background-color: #f8f9fa; /* Achtergrondkleur voor visuele consistentie */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px; /* Licht afgeronde hoeken */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+        .brand-logos .logo-box img {
+            max-width: 100%; /* Zorg dat het logo proportioneel binnen de box past */
+            max-height: 100%; /* Voorkomt dat logo groter is dan de box */
+            object-fit: contain; /* Houd het logo proportioneel en binnen de grenzen */
+        }
+        .brand-logos .logo-box:hover {
+            transform: scale(1.05); /* Vergroot de hele box lichtjes bij hover */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Intensere schaduw bij hover */
         }
     
         /* Footer */
         footer {
-            position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
@@ -505,34 +523,42 @@
             <div class="col-md-4">
                 <div class="testimonial-card">
                     <p>"The tools were in excellent condition and helped me finish my project on time!"</p>
-                    <h6>– John D.</h6>
+                    <h6>– Glenn N.</h6>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="testimonial-card">
                     <p>"Fast delivery and easy rental process. Highly recommend EasyTools."</p>
-                    <h6>– Maria R.</h6>
+                    <h6>– Arne C.</h6>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="testimonial-card">
                     <p>"Great selection of tools and very friendly support staff."</p>
-                    <h6>– Kevin S.</h6>
+                    <h6>– Tim D.</h6>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Brands Section -->
     <div class="container brands-section">
         <h2>Trusted Brands</h2>
-        <div class="brand-logos d-flex justify-content-center flex-wrap">
-            <img src="https://via.placeholder.com/100x50?text=Brand+1" alt="Brand 1">
-            <img src="https://via.placeholder.com/100x50?text=Brand+2" alt="Brand 2">
-            <img src="https://via.placeholder.com/100x50?text=Brand+3" alt="Brand 3">
-            <img src="https://via.placeholder.com/100x50?text=Brand+4" alt="Brand 4">
+        <div class="brand-logos">
+            <div class="logo-box">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/DeWalt_Logo.svg" alt="DeWalt">
+            </div>
+            <div class="logo-box">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Makita_logo.jpg" alt="Makita">
+            </div>
+            <div class="logo-box">
+                <img src="https://logos-world.net/wp-content/uploads/2020/08/Bosch-Logo.png" alt="Bosch">
+            </div>
+            <div class="logo-box">
+                <img src="https://1000logos.net/wp-content/uploads/2020/08/Stanley-Logo.png" alt="Stanley">
+            </div>
         </div>
     </div>
+    
 
     <!-- Call to Action -->
     <div class="container text-center my-5">
