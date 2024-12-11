@@ -49,7 +49,6 @@
                     aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -58,14 +57,13 @@
                                 {% if username %}
                                     Welcome, <strong>{{ username }}</strong>
                                 {% else %}
-                                    Pages
+                                    Click here to login
                                 {% endif %}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 {% if username %}
                                     <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.listings') }}">View All Products</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
