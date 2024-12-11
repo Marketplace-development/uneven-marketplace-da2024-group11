@@ -76,7 +76,35 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
+<<<<<<< HEAD
                         <a class="nav-link fw-bold text-dark" href="{{ url_for('main.profile') }}">Profile</a>
+=======
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if username %}
+                                    Welcome, <strong>{{ username }}</strong>
+                                {% else %}
+                                    Click here to login
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                {% if username %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Proudct</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
+                                            <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
+                                        </form>
+                                    </li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+>>>>>>> d158378ca43e276c321fa02f4581b3593755743c
                     </li>
                 </ul>
             </div>
@@ -100,7 +128,7 @@
             <!-- Buttons Row -->
             <div class="d-flex justify-content-center mt-4">
                 {% if listing.availability %}
-                    <form action="{{ url_for('main.buy_listing', listing_id=listing.listing_id) }}" method="post" class="me-2">
+                    <form action="{{ url_for('main.add_to_cart', listing_id=listing.listing_id) }}" method="post" class="me-2">
                         <button type="submit" class="btn btn-primary px-5 py-2">Rent This Tool</button>
                     </form>
                 {% endif %}
@@ -155,3 +183,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> d158378ca43e276c321fa02f4581b3593755743c

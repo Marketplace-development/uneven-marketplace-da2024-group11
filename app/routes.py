@@ -445,4 +445,113 @@ def inject_globals():
             username = user.username
     return {'username': username, 'datetime': datetime}
 
+@main.route('/cart', methods=['GET', 'POST'])
+def cart():
+    if 'phone_number' not in session:
+        return redirect(url_for('main.login'))
+    
+    # Mock-up winkelwagen data (vervang dit met sessiegegevens of database-query)
+    cart_items = session.get('cart', [])
+    
+    total_price = 0
+    commission_fee = 0
+    grand_total = 0
+    
+    # Bereken prijzen
+    for item in cart_items:
+        item['total_price'] = item['price_per_day'] * item['days']
+        total_price += item['total_price']
+    
+    commission_fee = total_price * 0.05  # 5% commissie
+    grand_total = total_price + commission_fee
 
+    return render_template(
+        'cart.html',
+        cart_items=cart_items,
+        total_price=total_price,
+        commission_fee=commission_fee,
+        grand_total=grand_total
+    )
+@main.route('/add-to-cart/<int:listing_id>', methods=['POST'])
+def add_to_cart(listing_id):
+    if 'phone_number' not in session:
+        return redirect(url_for('main.login'))
+
+    # Haal de details van de tool op
+    listing = Listing.query.get_or_404(listing_id)
+
+    if not listing.availability:
+        flash("This tool is currently unavailable.", "error")
+        return redirect(url_for('main.listing_detail', id=listing_id))
+
+    # Controleer of de winkelwagen al in de sessie bestaat
+    if 'cart' not in session:
+        session['cart'] = []
+
+    # Voeg de tool toe aan de winkelwagen
+    session['cart'].append({
+        "id": listing.listing_id,
+        "name": listing.name_tool,
+        "price_per_day": float(listing.price_set_by_provider),
+        "days": 1  # Standaard aantal dagen
+    })
+    session.modified = True
+
+    flash(f"{listing.name_tool} has been added to your cart.", "success")
+    return redirect(url_for('main.cart'))
+
+@main.route('/remove-from-cart/<int:listing_id>', methods=['POST'])
+def remove_from_cart(listing_id):
+    if 'cart' in session:
+        cart = session['cart']
+        session['cart'] = [item for item in cart if item['id'] != listing_id]
+        session.modified = True
+        flash("Product removed from your cart.", "success")
+    else:
+        flash("Cart is empty.", "error")
+    return redirect(url_for('main.cart'))
+@main.route('/confirm-order', methods=['POST'])
+def confirm_order():
+    if 'phone_number' not in session:
+        flash("You need to be logged in to confirm your order.", "error")
+        return redirect(url_for('main.login'))
+
+    customer_phone = session['phone_number']
+    cart = session.get('cart', [])
+
+    if not cart:
+        flash("Your cart is empty.", "error")
+        return redirect(url_for('main.cart'))
+
+    for item in cart:
+        # Voeg elk product in de winkelwagen toe als een nieuwe transactie
+        listing = Listing.query.get_or_404(item['id'])
+        if not listing.availability:
+            flash(f"{listing.name_tool} is no longer available.", "error")
+            continue
+
+        # Bereken commissie en voeg transactie toe
+        commission_fee = listing.price_set_by_provider * item['days'] * Decimal('0.05')
+        new_transaction = Transaction(
+            listing_id=listing.listing_id,
+            provider_id=listing.provider_id,
+            customer_phone=customer_phone,
+            commission_fee=commission_fee,
+            date=datetime.now()
+        )
+
+        # Markeer item als niet beschikbaar
+        listing.availability = False
+
+        try:
+            db.session.add(new_transaction)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash(f"An error occurred with {listing.name_tool}: {str(e)}", "error")
+
+    # Leeg de winkelwagen na het bevestigen
+    session['cart'] = []
+    session.modified = True
+    flash("Your order has been confirmed!", "success")
+    return redirect(url_for('main.profile'))
