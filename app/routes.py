@@ -390,7 +390,7 @@ def make_available_again(listing_id):
         db.session.rollback()
         flash("There was an error making the tool available again.", "error")
 
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.profile'))
 
 
 

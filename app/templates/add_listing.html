@@ -110,13 +110,14 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <!-- Navbar Brand -->
+            <!-- Updated href attribute to direct to the index page -->
             <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
                     aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -125,7 +126,7 @@
                                 {% if username %}
                                     Welcome, <strong>{{ username }}</strong>
                                 {% else %}
-                                    Click here to login
+                                    Pages
                                 {% endif %}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -133,6 +134,7 @@
                                     <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Product</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.cart') }}">Cart</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
