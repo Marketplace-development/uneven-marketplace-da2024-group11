@@ -23,6 +23,20 @@
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        /* Dropdown Button Styling */
+        .dropdown-toggle {
+            background-color: #0d6efd; /* Set dropdown button color */
+            color: white; /* Ensure the text is readable */
+            border: none; /* Remove border if needed */
+            border-radius: 50px; /* Match other button styles */
+            padding: 0.5rem 1rem; /* Adjust padding for better spacing */
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s;
+        }
+        
+        .dropdown-toggle:hover, .dropdown-toggle:focus {
+            background-color: #0056b3; /* Darker shade on hover */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow on hover */
+        }
         .btn-primary, .btn-secondary {
             border-radius: 50px;
         }
@@ -69,29 +83,30 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
+            <!-- Updated href attribute to direct to the index page -->
             <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-<<<<<<< HEAD
-                        <a class="nav-link fw-bold text-dark" href="{{ url_for('main.profile') }}">Profile</a>
-=======
                         <div class="dropdown">
                             <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% if username %}
                                     Welcome, <strong>{{ username }}</strong>
                                 {% else %}
-                                    Click here to login
+                                    Pages
                                 {% endif %}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 {% if username %}
                                     <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Proudct</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Product</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
@@ -104,7 +119,6 @@
                                 {% endif %}
                             </ul>
                         </div>
->>>>>>> d158378ca43e276c321fa02f4581b3593755743c
                     </li>
                 </ul>
             </div>
