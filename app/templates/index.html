@@ -3,151 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Dashboard - EasyTools</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
-            background-image: url('{{ url_for('static', filename='images/background.jpeg') }}');
-            background-size: cover;
-            background-position: center top; /* Achtergrond gecentreerd en top geplaatst */
-            background-attachment: fixed; /* Achtergrond blijft vast staan bij scrollen */
-            background-repeat: no-repeat;
-            color: #343a40; /* Zorg voor leesbaarheid */
+            font-family: "Nunito", sans-serif;
+            color: #333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding-bottom: 80px; /* ruimte voor de footer */
         }
+
+        /* Navbar */
         .navbar {
-            box-shadow: 0 4px 6px rgba(55, 18, 18, 0.1);
-            background-color: rgba(255, 255, 255, 0.874); /* Transparante achtergrond voor betere leesbaarheid */
+            background-color: #ffffff;
+            border-bottom: 1px solid #dddddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        h1, h2 {
-            color: #35475a;
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #0d6efd !important;
         }
-        .btn-primary, .btn-info, .btn-danger, .btn-warning {
-            border-radius: 50px;
+        .navbar .dropdown-toggle {
+            background: #0d6efd;
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 20px;
         }
-        .list-group-item {
-            border-radius: 10px;
-            margin-bottom: 10px;
+        .navbar .dropdown-toggle:hover {
+            background: #0a58ca;
+        }
+        .navbar .dropdown-menu {
+            background: #ffffff;
+            border: 1px solid #cccccc;
+        }
+        .navbar .dropdown-item {
+            color: #333;
+        }
+        .navbar .dropdown-item:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 4rem 1rem;
+            background-color: #e9ecef;
+            margin-top: 2rem;
+            border-radius: 8px;
+            position: relative;
+        }
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+        .hero-section p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+        .hero-section .search-bar {
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+        }
+        .hero-section .search-bar input {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .hero-section .search-bar button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        .button-group .btn {
+            margin: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 30px;
+            font-weight: 600;
+            border: none;
+        }
+        .button-group .btn-primary {
+            background: #0d6efd;
+            color: #ffffff;
+        }
+        .button-group .btn-primary:hover {
+            background: #0a58ca;
+        }
+        .button-group .btn-info {
+            background: #0a58ca;
+            color: #ffffff;
+        }
+        .button-group .btn-info:hover {
+            background: #084298;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            padding: 4rem 1rem 2rem;
+        }
+        .categories-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0d6efd;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .category-card {
+            background: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            text-align: center;
+            padding: 2rem 1rem;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        .list-group-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 8px rgba(68, 33, 33, 0.1);
+        .category-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
+        .category-card i {
+            font-size: 2rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+        .category-card h5 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .category-card p {
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        /* How it Works Section */
+        .how-it-works {
+            background-color: #ffffff;
+            border-top: 1px solid #dddddd;
+            border-bottom: 1px solid #dddddd;
+            padding: 4rem 1rem;
+        }
+        .how-it-works h2 {
+            text-align: center;
+            color: #0d6efd;
+            margin-bottom: 3rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .step-card {
+            text-align: center;
+            padding: 1rem;
+        }
+        .step-card h5 {
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        .step-card p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        /* Popular Tools Section */
+        .popular-section {
+            padding: 4rem 1rem;
+        }
+        .popular-section h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+        .popular-section h2 .title-box {
+            display: inline-block;
+            background-color: #ffffff;
+            padding: 10px 20px;
+            border: 1px solid #0d6efd;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+
+        .listing-card {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #dddddd;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .listing-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .rank-circle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ffc107;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            line-height: 40px;
+        }
+        .card-body h5 {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .card-body .card-text {
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        .card-body .btn-primary {
+            background: #0d6efd;
+            color: #ffffff;
+            border: none;
+            font-weight: 600;
+            border-radius: 30px;
+        }
+        .card-body .btn-primary:hover {
+            background: #0a58ca;
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            background-color: #f8f9fa;
+            padding: 4rem 1rem;
+        }
+        .testimonials-section h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0d6efd;
+            margin-bottom: 3rem;
+        }
+        .testimonial-card {
+            background: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .testimonial-card p {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        .testimonial-card h6 {
+            font-weight: 700;
+            margin-bottom: 0;
+            color: #333;
+        }
+
+        /* Brands Section */
+        .brands-section {
+            background: #ffffff;
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+        .brands-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0d6efd;
+            margin-bottom: 3rem;
+        }
+        .brand-logos img {
+            max-width: 100px;
+            margin: 1rem;
+            filter: grayscale(100%);
+            transition: filter 0.3s;
+        }
+        .brand-logos img:hover {
+            filter: grayscale(0%);
+        }
+
+        /* Footer */
         footer {
-            background-color: rgba(0, 0, 0, 0.8); /* Transparant zwart voor betere zichtbaarheid op de achtergrond */
-            color: white;
-            padding: 15px 0;
             position: fixed;
-            width: 100%;
             bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0d6efd;
+            text-align: center;
+            padding: 1rem 0;
+            color: #ffffff;
+            font-size: 0.9rem;
         }
         footer p {
             margin: 0;
         }
-        .hero-section {
-            text-align: center;
-            margin-bottom: 5rem;
-            background-color: rgba(255, 255, 255, 0.924); /* Lichte achtergrond voor betere leesbaarheid */
-            padding: 2rem;
-            border-radius: 10px;
-        }
-        .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #007bff;
-            margin-bottom: 2rem;
-        }
-        .hero-section p {
-            font-size: 1.25rem;
-            color: #6c757d;
-            margin-bottom: 2rem;
-        }
-        .hero-section .btn {
-            margin-top: 1rem;
-            font-size: 1.2rem;
-            padding: 10px 20px;
-        }
-        .content-section {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 0.5rem;
-        }
-        .content-header h2 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: #343a40;
-        }
-        .button-group {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        .button-group .btn {
-            flex-shrink: 0;
-        }
-        .popular-section {
-            margin-top: 5rem;
-        }
-        .title-box {
-            display: inline-block;
-            background-color: rgba(255, 255, 255, 0.9); /* Witte achtergrond met lichte transparantie */
-            padding: 10px 20px; /* Binnenruimte rond de tekst */
-            border: 2px solid #000000; /* Blauwe rand */
-            border-radius: 10px; /* Ronde hoeken */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
-            margin: auto; /* Voor centreren */
-        }
-        .listing-card {
-            position: relative;
-            background: rgba(255, 255, 255, 0.9); /* Transparant wit voor zichtbaarheid */
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease-in-out;
-        }
-        .listing-card:hover {
-            transform: scale(1.03);
-        }
-        .card-body {
-            padding: 20px;
-        }
-        .rank-circle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #ffe600;
-            color: #343a40;
-            font-weight: bold;
-            text-align: center;
-            line-height: 30px;
-        }
     </style>
 </head>
 <body>
+
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="#">EasyTools</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+            <a class="navbar-brand" href="#">EasyTools</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon" style="filter: invert(0%);"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <div class="dropdown">
-                            <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% if username %}
                                     Welcome, <strong>{{ username }}</strong>
                                 {% else %}
@@ -158,12 +327,13 @@
                                 {% if username %}
                                     <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.listings') }}">View All Products</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
-                                        <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
-                                    </form></li>
+                                    <li>
+                                        <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
+                                            <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
+                                        </form>
+                                    </li>
                                 {% else %}
                                     <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
@@ -177,23 +347,89 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="container hero-section mt-5">
+    <div class="container hero-section">
         <h1>Find the Best Equipment for Your Project</h1>
         <p>Browse, rent, and manage your tools effortlessly with EasyTools.</p>
+        <!-- Aangepast formulier voor zoeken op toolnaam -->
+        <form action="{{ url_for('main.search_listings') }}" method="get" class="search-bar input-group mb-3">
+            <input type="text" class="form-control" name="name_tool" placeholder="Search tools..." aria-label="Search tools" aria-describedby="button-search">
+            <button class="btn btn-outline-primary" type="submit" id="button-search">Search</button>
+        </form>
         <div class="button-group">
             <a href="{{ url_for('main.add_listing') }}" class="btn btn-primary btn-lg">Add a Product</a>
             <a href="{{ url_for('main.search_listings') }}" class="btn btn-info btn-lg">View All Listings</a>
         </div>
     </div>
 
+    <!-- Categories Section -->
+    <div class="container categories-section">
+        <h2>Explore Our Categories</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="category-card">
+                    <i class="bi bi-hammer"></i>
+                    <h5>Hand Tools</h5>
+                    <p>Hammers, screwdrivers, wrenches and more.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-card">
+                    <i class="bi bi-lightning-charge"></i>
+                    <h5>Power Tools</h5>
+                    <p>Drills, saws, sanders and other power equipment.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-card">
+                    <i class="bi bi-ladder"></i>
+                    <h5>Construction Tools</h5>
+                    <p>Ladders, scaffolding, safety gear and more.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-card">
+                    <i class="bi bi-bricks"></i>
+                    <h5>Gardening & Landscaping</h5>
+                    <p>Lawnmowers, trimmers, leaf blowers and more.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it Works Section -->
+    <div class="container how-it-works">
+        <h2>How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <i class="bi bi-search" style="font-size:2rem;color:#0d6efd;"></i>
+                    <h5>1. Find Your Tool</h5>
+                    <p>Use our search or browse categories to find the perfect tool for your job.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <i class="bi bi-cart-check" style="font-size:2rem;color:#0d6efd;"></i>
+                    <h5>2. Rent Online</h5>
+                    <p>Book your tool rental online quickly and easily, with secure payment options.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <i class="bi bi-truck" style="font-size:2rem;color:#0d6efd;"></i>
+                    <h5>3. Pick Up or Delivery</h5>
+                    <p>Collect your tool or have it delivered. Get the job done efficiently and return when finished.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Popular Tools Section -->
     <div class="container popular-section">
-        <h2 class="text-center mb-4">
-            <span class="title-box">Top 3 Most Popular Tools</span>
-        </h2>
+        <h2><span class="title-box">Top 3 Most Popular Tools</span></h2>
         <div class="row g-4">
             {% for listing in popular_listings %}
-                <div class="col-md-4">
+                <div class="col-md-4 position-relative">
                     <div class="card listing-card">
                         {% if loop.index <= 3 %}
                             <span class="rank-circle">{{ loop.index }}</span>
@@ -212,8 +448,51 @@
         </div>
     </div>
 
+    <!-- Testimonials Section -->
+    <div class="container testimonials-section">
+        <h2>What Our Customers Say</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <p>"The tools were in excellent condition and helped me finish my project on time!"</p>
+                    <h6>– John D.</h6>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <p>"Fast delivery and easy rental process. Highly recommend EasyTools."</p>
+                    <h6>– Maria R.</h6>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <p>"Great selection of tools and very friendly support staff."</p>
+                    <h6>– Kevin S.</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Brands Section -->
+    <div class="container brands-section">
+        <h2>Trusted Brands</h2>
+        <div class="brand-logos d-flex justify-content-center flex-wrap">
+            <img src="https://via.placeholder.com/100x50?text=Brand+1" alt="Brand 1">
+            <img src="https://via.placeholder.com/100x50?text=Brand+2" alt="Brand 2">
+            <img src="https://via.placeholder.com/100x50?text=Brand+3" alt="Brand 3">
+            <img src="https://via.placeholder.com/100x50?text=Brand+4" alt="Brand 4">
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="container text-center my-5">
+        <h3>Ready to Get Started?</h3>
+        <p>Find the perfect tool for your next project and rent it easily on EasyTools.</p>
+        <a href="{{ url_for('main.search_listings') }}" class="btn btn-primary btn-lg">Start Browsing</a>
+    </div>
+
     <!-- Footer -->
-    <footer class="text-center">
+    <footer>
         <p>&copy; {{ datetime.now().year }} EasyTools. All Rights Reserved.</p>
     </footer>
 
