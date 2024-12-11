@@ -38,23 +38,49 @@
     </style>
 </head>
 <body>
-    <!-- Custom Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link fw-bold text-dark" href="{{ url_for('main.profile') }}">Profile</a>
-                    </li>
-                </ul>
-            </div>
+   <!-- Navbar -->
+   <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <!-- Navbar Brand -->
+        <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <div class="dropdown">
+                        <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if username %}
+                                Welcome, <strong>{{ username }}</strong>
+                            {% else %}
+                                Click here to login
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            {% if username %}
+                                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Listings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
+                                        <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
+                                    </form>
+                                </li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
+            </ul>
         </div>
-    </nav>
-
+    </div>
+</nav>
     <!-- Main Content -->
     <div class="container mt-5">
         <div class="card shadow-sm">
