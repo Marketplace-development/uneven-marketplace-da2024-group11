@@ -8,101 +8,74 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
-            font-family: "Nunito", sans-serif;
-            color: #333;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding-bottom: 80px; /* ruimte voor de footer */
+            background-color: #f8f9fa;
         }
-
-        /* Navbar */
         .navbar {
-            background-color: #ffffff;
-            border-bottom: 1px solid #dddddd;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: #0d6efd !important;
+        h1, h2 {
+            color: #343a40;
         }
-        .navbar .dropdown-toggle {
-            background: #0d6efd;
-            border: none;
-            color: #ffffff;
-            font-weight: 600;
-            border-radius: 20px;
+        .list-group-item {
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .navbar .dropdown-toggle:hover {
-            background: #0a58ca;
+        .list-group-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .navbar .dropdown-menu {
-            background: #ffffff;
-            border: 1px solid #cccccc;
+        .btn-primary, .btn-info, .btn-danger, .btn-warning {
+            border-radius: 50px;
         }
-        .navbar .dropdown-item {
-            color: #333;
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 15px 0;
         }
-        .navbar .dropdown-item:hover {
-            background: #f0f0f0;
-            color: #333;
+        footer p {
+            margin: 0;
         }
-
-        /* Hero Section */
-        .hero-section {
-            text-align: center;
-            padding: 4rem 1rem;
-            background-color: #e9ecef;
-            margin-top: 2rem;
-            border-radius: 8px;
-            position: relative;
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #007bff;
         }
-        .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #0d6efd;
-            margin-bottom: 1rem;
-        }
-        .hero-section p {
-            font-size: 1.1rem;
-            color: #555;
-            margin-bottom: 2rem;
-        }
-        .hero-section .search-bar {
-            max-width: 600px;
-            margin: 0 auto 2rem auto;
-        }
-        .hero-section .search-bar input {
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-        .hero-section .search-bar button {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
         .button-group .btn {
-            margin: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 30px;
-            font-weight: 600;
-            border: none;
+            flex-shrink: 0;
         }
-        .button-group .btn-primary {
-            background: #0d6efd;
-            color: #ffffff;
+        .profile-section {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .button-group .btn-primary:hover {
-            background: #0a58ca;
+        .section-title {
+            font-weight: bold;
+            font-size: 1.75rem;
+            color: #007bff;
+            margin-bottom: 20px;
         }
-        .button-group .btn-info {
-            background: #0a58ca;
-            color: #ffffff;
+        .listings-section {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .button-group .btn-info:hover {
-            background: #084298;
+        .no-products {
+            font-size: 1.1rem;
+            color: #6c757d;
         }
-
+    
         /* Categories Section */
         .categories-section {
             padding: 4rem 1rem 2rem;
@@ -124,7 +97,7 @@
         }
         .category-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
         .category-card i {
             font-size: 2rem;
@@ -139,7 +112,7 @@
             color: #555;
             font-size: 0.9rem;
         }
-
+    
         /* How it Works Section */
         .how-it-works {
             background-color: #ffffff;
@@ -166,7 +139,7 @@
             color: #555;
             font-size: 0.95rem;
         }
-
+    
         /* Popular Tools Section */
         .popular-section {
             padding: 4rem 1rem;
@@ -178,27 +151,16 @@
             font-weight: 700;
             color: #0d6efd;
         }
-        .popular-section h2 .title-box {
-            display: inline-block;
-            background-color: #ffffff;
-            padding: 10px 20px;
-            border: 1px solid #0d6efd;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            color: #0d6efd;
-            font-weight: 600;
-        }
-
         .listing-card {
             background: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
             border: 1px solid #dddddd;
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .listing-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
         .rank-circle {
             position: absolute;
@@ -232,7 +194,7 @@
         .card-body .btn-primary:hover {
             background: #0a58ca;
         }
-
+    
         /* Testimonials Section */
         .testimonials-section {
             background-color: #f8f9fa;
@@ -262,7 +224,7 @@
             margin-bottom: 0;
             color: #333;
         }
-
+    
         /* Brands Section */
         .brands-section {
             background: #ffffff;
@@ -284,7 +246,7 @@
         .brand-logos img:hover {
             filter: grayscale(0%);
         }
-
+    
         /* Footer */
         footer {
             position: fixed;
@@ -300,27 +262,30 @@
         footer p {
             margin: 0;
         }
-    </style>
+    </style>    
 </head>
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="#">EasyTools</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon" style="filter: invert(0%);"></span>
+            <!-- Updated href attribute to direct to the index page -->
+            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
+            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <div class="dropdown">
-                            <button class="btn dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% if username %}
                                     Welcome, <strong>{{ username }}</strong>
                                 {% else %}
-                                    Click here to login
+                                    Pages
                                 {% endif %}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
