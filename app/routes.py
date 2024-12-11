@@ -192,7 +192,7 @@ def add_listing():
             db.session.add(new_listing)
             db.session.commit()
             flash("Listing added successfully!", "success")
-            return redirect(url_for('main.listings'))  # Verwijst naar de lijstpagina
+            return redirect(url_for('main.index'))  # Verwijst naar de lijstpagina
         except Exception as e:
             db.session.rollback()
             flash("There was an error adding the listing.", "error")
