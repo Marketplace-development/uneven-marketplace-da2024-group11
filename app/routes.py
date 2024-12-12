@@ -237,68 +237,7 @@ def listing_detail(id):
     return render_template('listing_detail.html', listing=listing, recommended_tools=recommended_tools)
 
 
-@main.route('/buy-listing/<int:listing_id>', methods=['POST'])
-def buy_listing(listing_id):
-    if 'phone_number' not in session:
-        flash("You need to be logged in to rent a tool.", "error")
-        return redirect(url_for('main.login'))
 
-    listing = Listing.query.get_or_404(listing_id)
-
-    if listing.provider_id == session['phone_number']:
-        flash("You cannot rent your own product.", "error")
-        return redirect(url_for('main.listings'))
-
-    if not listing.availability:
-        flash("This tool is currently unavailable.", "error")
-        return redirect(url_for('main.listings'))
-
-    customer_phone = session['phone_number']
-    customer = Customer.query.filter_by(phone_c=customer_phone).first()
-
-    try:
-        # Create customer if not exists
-        if not customer:
-            customer = Customer(phone_c=customer_phone, premium=False)
-            db.session.add(customer)
-            db.session.commit()
-
-        # Ensure price is valid
-        if not listing.price_set_by_provider:
-            raise ValueError("Price for the tool is not set.")
-
-        # Calculate commission fee
-        price = Decimal(str(listing.price_set_by_provider))
-        commission_fee = price * Decimal('0.05')
-
-        # Create transaction
-        new_transaction = Transaction(
-            listing_id=listing.listing_id,
-            provider_id=listing.provider_id,
-            customer_phone=customer.phone_c,
-            commission_fee=float(commission_fee),
-            date=datetime.now(),
-        )
-
-        # Mark listing as unavailable
-        listing.availability = False
-
-        db.session.add(new_transaction)
-        db.session.commit()
-
-        flash("You have successfully rented this tool!", "success")
-
-    except ValueError as ve:
-        db.session.rollback()
-        flash(f"Validation error: {ve}", "error")
-        print(f"Validation Error: {ve}")
-
-    except Exception as e:
-        db.session.rollback()
-        flash(f"There was an error processing your rental: {str(e)}", "error")
-        print(f"Transaction Error: {e}")
-
-    return redirect(url_for('main.index'))
 
 
 
@@ -491,6 +430,10 @@ def add_to_cart(listing_id):
     if not listing.availability:
         flash("This tool is currently unavailable.", "error")
         return redirect(url_for('main.listing_detail', id=listing_id))
+    if listing.provider_id == session['phone_number']:
+        flash("You cannot add your own tool to the cart.", "error")
+        return redirect(url_for('main.listing_detail', id=listing_id))
+
 
     # Controleer of de winkelwagen al in de sessie bestaat
     if 'cart' not in session:
@@ -527,49 +470,73 @@ def confirm_order():
     customer_phone = session['phone_number']
     cart = session.get('cart', [])
 
+    # Fetch single listing_id if this request is for a single item
+    listing_id = request.form.get('listing_id')
+
+    # Check if this is a single-item request (like buy_listing)
+    if listing_id:
+        listing = Listing.query.get_or_404(listing_id)
+        cart = [{
+            "id": listing.listing_id,
+            "name": listing.name_tool,
+            "price_per_day": float(listing.price_set_by_provider),
+            "days": 1  # Default rental period
+        }]
+
     if not cart:
         flash("Your cart is empty.", "error")
         return redirect(url_for('main.cart'))
 
     customer = Customer.query.filter_by(phone_c=customer_phone).first()
 
-    
     # Create customer if not exists
     if not customer:
         customer = Customer(phone_c=customer_phone, premium=False)
         db.session.add(customer)
         db.session.commit()
-    
 
     for item in cart:
-        # Voeg elk product in de winkelwagen toe als een nieuwe transactie
+        # Fetch the listing being rented
         listing = Listing.query.get_or_404(item['id'])
+
+        # Prevent users from renting their own tools
+        if listing.provider_id == customer_phone:
+            flash(f"You cannot rent your own tool: {listing.name_tool}.", "error")
+            continue
+
         if not listing.availability:
             flash(f"{listing.name_tool} is no longer available.", "error")
             continue
 
-        # Bereken commissie en voeg transactie toe
-        commission_fee = listing.price_set_by_provider * item['days'] * Decimal('0.05')
-        new_transaction = Transaction(
-            listing_id=listing.listing_id,
-            provider_id=listing.provider_id,
-            customer_phone=customer_phone,
-            commission_fee=commission_fee,
-            date=datetime.now()
-        )
-
-        # Markeer item als niet beschikbaar
-        listing.availability = False
-
         try:
+            # Calculate commission fee
+            price = Decimal(str(listing.price_set_by_provider))
+            commission_fee = price * Decimal('0.05') * Decimal(item['days'])
+
+            # Create transaction
+            new_transaction = Transaction(
+                listing_id=listing.listing_id,
+                provider_id=listing.provider_id,
+                customer_phone=customer.phone_c,
+                commission_fee=float(commission_fee),
+                date=datetime.now()
+            )
+
+            # Mark listing as unavailable
+            listing.availability = False
+
             db.session.add(new_transaction)
             db.session.commit()
+
         except Exception as e:
             db.session.rollback()
             flash(f"An error occurred with {listing.name_tool}: {str(e)}", "error")
+            print(f"Transaction Error: {e}")
 
-    # Leeg de winkelwagen na het bevestigen
-    session['cart'] = []
-    session.modified = True
+    # Clear the cart after confirming the order
+    if not listing_id:  # Clear the cart only if it's not a single-item request
+        session['cart'] = []
+        session.modified = True
+
     flash("Your order has been confirmed!", "success")
     return redirect(url_for('main.profile'))
