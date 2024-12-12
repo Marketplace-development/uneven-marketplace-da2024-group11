@@ -1,7 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, render_template, session, flash
 from app.models import db, User, Listing, Transaction, Customer, Provider, Review
 from app.services.popularity import calculate_popularity
-from app.services.pricing import dynamic_pricing_advanced
 from app.services.recommendation import recommend_tools
 from datetime import datetime
 from decimal import Decimal
@@ -256,41 +255,53 @@ def buy_listing(listing_id):
 
     customer_phone = session['phone_number']
     customer = Customer.query.filter_by(phone_c=customer_phone).first()
-    if not customer:
-        customer = Customer(phone_c=customer_phone, premium=False)
-        db.session.add(customer)
-        db.session.commit()
-
-    commission_fee = listing.price_set_by_provider * Decimal('0.05')
-    new_transaction = Transaction(
-        listing_id=listing.listing_id,
-        provider_id=listing.provider_id,
-        customer_phone=customer.phone_c,
-        commission_fee=commission_fee,
-        date=datetime.now()
-    )
-
-    listing.availability = False
 
     try:
+        # Create customer if not exists
+        if not customer:
+            customer = Customer(phone_c=customer_phone, premium=False)
+            db.session.add(customer)
+            db.session.commit()
+
+        # Ensure price is valid
+        if not listing.price_set_by_provider:
+            raise ValueError("Price for the tool is not set.")
+
+        # Calculate commission fee
+        price = Decimal(str(listing.price_set_by_provider))
+        commission_fee = price * Decimal('0.05')
+
+        # Create transaction
+        new_transaction = Transaction(
+            listing_id=listing.listing_id,
+            provider_id=listing.provider_id,
+            customer_phone=customer.phone_c,
+            commission_fee=float(commission_fee),
+            date=datetime.now(),
+        )
+
+        # Mark listing as unavailable
+        listing.availability = False
+
         db.session.add(new_transaction)
         db.session.commit()
+
         flash("You have successfully rented this tool!", "success")
-    except Exception:
+
+    except ValueError as ve:
         db.session.rollback()
-        flash("There was an error processing your rental.", "error")
+        flash(f"Validation error: {ve}", "error")
+        print(f"Validation Error: {ve}")
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f"There was an error processing your rental: {str(e)}", "error")
+        print(f"Transaction Error: {e}")
 
     return redirect(url_for('main.index'))
 
 
-@main.route('/your-transactions')
-def your_transactions():
-    if 'phone_number' not in session:
-        return redirect(url_for('main.login'))
 
-    customer_phone = session['phone_number']
-    transactions = Transaction.query.filter_by(customer_phone=customer_phone).all()
-    return render_template('your_transactions.html', transactions=transactions)
 
 @main.route('/popular-listings', methods=['GET'])
 def popular_listings():
@@ -309,10 +320,7 @@ def popular_listings():
     return render_template('popular_listings.html', listings=listings)
 
 
-@main.route('/pricing', methods=['GET'])
-def pricing():
-    pricing_data = dynamic_pricing_advanced(db.session)
-    return render_template('pricing.html', pricing_data=pricing_data)
+
 
 @main.route('/listings')
 def listings():
@@ -522,6 +530,16 @@ def confirm_order():
     if not cart:
         flash("Your cart is empty.", "error")
         return redirect(url_for('main.cart'))
+
+    customer = Customer.query.filter_by(phone_c=customer_phone).first()
+
+    
+    # Create customer if not exists
+    if not customer:
+        customer = Customer(phone_c=customer_phone, premium=False)
+        db.session.add(customer)
+        db.session.commit()
+    
 
     for item in cart:
         # Voeg elk product in de winkelwagen toe als een nieuwe transactie
