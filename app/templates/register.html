@@ -8,103 +8,85 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #000;
+            background-color: #f8f9fa; /* Lichtgrijze achtergrond */
         }
         .register-container {
-            padding: 3rem;
+            padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
+            max-width: 100%; /* Zorg dat het formulier niet breder is dan het scherm */
             width: 100%;
+            background-color: #fff; /* Witte achtergrond */
         }
         .register-title {
             font-weight: bold;
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #343a40;
             margin-bottom: 1rem;
         }
         .subtitle {
             font-size: 1.25rem;
             color: #6c757d;
-            margin-bottom: 2rem;
-        }
-        .form-control {
-            font-size: 1.25rem;
-            padding: 0.75rem;
-        }
-        .form-control:focus {
-            border-color: #80bdff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-        .btn-success {
-            font-size: 1.5rem;
-            padding: 0.75rem;
-            background-color: #198754;
-            border-color: #198754;
-        }
-        .btn-success:hover {
-            background-color: #157347;
-            border-color: #157347;
-        }
-        .btn-link {
-            font-size: 1.25rem;
-            color: #0d6efd;
-        }
-        .btn-link:hover {
-            text-decoration: underline;
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
 <body>
-    <div class="register-container text-center">
-        <h1 class="register-title">Create Account</h1>
-        <p class="subtitle">Join us by creating your account</p>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="register-container text-center">
+                    <h1 class="register-title">Create Account</h1>
+                    <p class="subtitle">Join us by creating your account</p>
 
-        <!-- Foutmeldingen -->
-        {% if error_message %}
-            <div class="alert alert-danger text-center" role="alert">
-                {{ error_message }}
-            </div>
-        {% endif %}
+                    <!-- Foutmeldingen -->
+                    {% if error_message %}
+                        <div class="alert alert-danger text-center" role="alert">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
 
-        <!-- Registratieformulier -->
-        <form method="post">
-            <div class="mb-4 text-start">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="Choose a username" required>
-            </div>
-            <div class="mb-4 text-start">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
-            </div>
-            <div class="mb-4 text-start">
-                <label for="address" class="form-label">Address</label>
-                <input type="text" id="address" name="address" class="form-control" placeholder="Enter your address" required>
-            </div>
-            <div class="mb-4 text-start">
-                <label for="postal_code" class="form-label">Postal Code</label>
-                <input type="text" id="postal_code" name="postal_code" class="form-control" placeholder="Enter your postal code" required>
-            </div>
-            <div class="mb-4 text-start">
-                <label for="city" class="form-label">City</label>
-                <input type="text" id="city" name="city" class="form-control" placeholder="Enter your city" required>
-            </div>
-            <div class="mb-4 text-start">
-                <label for="phone_number" class="form-label">Phone Number</label>
-                <input type="tel" id="phone_number" name="phone_number" class="form-control" placeholder="Enter your phone number" required>
-            </div>
-            <button type="submit" class="btn btn-success w-100">Register</button>
-        </form>
+                    <!-- Registratieformulier -->
+                    <form method="post">
+                        <div class="mb-3 text-start">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Choose a username" required>
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" id="address" name="address" class="form-control" placeholder="Enter your address" required>
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label for="postal_code" class="form-label">Postal Code</label>
+                            <input type="text" id="postal_code" name="postal_code" class="form-control" placeholder="Enter your postal code" required>
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" id="city" name="city" class="form-control" placeholder="Enter your city" required>
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="tel" id="phone_number" name="phone_number" class="form-control" placeholder="Enter your phone number" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Register</button>
+                    </form>
 
-        <!-- Links -->
-        <div class="mt-4">
-            <p class="link-text">Already have an account? <a href="{{ url_for('main.login') }}">Login here</a></p>
-            <a href="{{ url_for('main.index') }}" class="btn btn-link">Back to Homepage</a>
+                    <!-- Links -->
+                    <div class="mt-4">
+                        <p class="link-text">Already have an account? <a href="{{ url_for('main.login') }}">Login here</a></p>
+                        <a href="{{ url_for('main.index') }}" class="btn btn-link">Back to Homepage</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
