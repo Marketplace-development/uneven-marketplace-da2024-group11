@@ -75,10 +75,10 @@ User
 The User table stores essential information about all registered users on the platform. It includes details like the user’s name, address, postal code, city, email, and phone number. The id column serves as the unique identifier for users.
 
 Customer
-The Customer table represents a specific subset of users who act as buyers. It links to the User table through the PhoneC foreign key. This allows for seamless integration between general user information and customer-specific operations.
+The Customer table represents a specific subset of users who act as buyers. It links to the User table through the PhoneC foreign key. This allows for seamless integration between general user information and customer-specific operations. Additionally, the Customer table includes a premium attribute, which we planned but did not have time to integrate into the website functionality. If further developed, premium status would exempt customers from paying the commission fee in exchange for a monthly subscription.
 
 Provider
-The Provider table contains data about users who act as sellers or providers of goods. Each provider is uniquely identified by ProviderP and may add and manage listings on the platform. This table is related to the User table through shared user information.
+The Provider table contains data about users who act as sellers or providers of goods. Each provider is uniquely identified by ProviderP and may add and manage listings on the platform. The Provider table also includes a premium attribute. While this was not implemented in the website, the intended functionality was to promote tools provided by premium providers more effectively compared to standard providers.
 
 Listing
 The Listing table stores information about items available for purchase. It includes attributes such as NameTool, Brand, Condition, BatteryIncluded, and PriceSetByProvider. Each listing is associated with a specific provider (ProviderID) to define its seller.
