@@ -8,77 +8,51 @@
     <style>
         body {
             background-color: #f8f9fa;
+            font-family: 'Roboto', sans-serif;
         }
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .dropdown-toggle {
             background-color: #0d6efd;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 0.5rem 1rem;
-            transition: background-color 0.2s ease-in-out, box-shadow 0.2s;
         }
-        .dropdown-toggle:hover, .dropdown-toggle:focus {
-            background-color: #0056b3;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .navbar-brand {
+            color: #fff !important;
+            font-size: 1.5rem;
         }
         .btn {
             border-radius: 50px;
         }
-        .btn-danger {
+        .dropdown-toggle {
+            color: #fff !important;
+            background-color: #0056b3;
             border-radius: 50px;
         }
-        .container {
-            margin-top: 0;
-        }
-        .cart-header {
-            font-size: 1.75rem;
-            font-weight: bold;
-            color: #0d6efd;
-            margin-bottom: 20px;
-        }
-        .cart-item {
-            background: #ffffff;
+        .dropdown-menu {
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .cart-item img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
+        .cart-container {
+            margin-top: 30px;
+        }
+        .cart-item {
+            background-color: #fff;
             border-radius: 10px;
-        }
-        .cart-item h5 {
-            font-size: 1.25rem;
-            font-weight: bold;
-        }
-        .cart-item p {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin: 5px 0;
-        }
-        .cart-item .btn {
-            border-radius: 50px;
-        }
-        .cart-actions {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
             display: flex;
             align-items: center;
-            gap: 10px; /* Space between dropdown and button */
+            justify-content: space-between;
         }
         .summary {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .summary h4 {
-            margin-bottom: 15px;
             font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #0d6efd;
         }
         /* Footer */
         footer {
@@ -94,49 +68,47 @@
         }
         footer p {
             margin: 0;
-        
+        }
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                    aria-label="Toggle navigation">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">EasyTools</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <div class="dropdown">
-                            <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                {% if username %}
-                                    Welcome, <strong>{{ username }}</strong>
-                                {% else %}
-                                    Pages
-                                {% endif %}
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                {% if username %}
-                                    <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Product</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.cart') }}">Cart</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
-                                            <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
-                                        </form>
-                                    </li>
-                                {% else %}
-                                    <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
-                                {% endif %}
-                            </ul>
-                        </div>
+                    <li class="nav-item dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if username %}
+                                Welcome, {{ username }}
+                            {% else %}
+                                Menu
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if username %}
+                                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Products</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.cart') }}">Cart</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
+                                        <button class="btn btn-danger btn-sm w-100" type="submit">Logout</button>
+                                    </form>
+                                </li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
+                            {% endif %}
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -145,21 +117,24 @@
 
     <!-- Main Content -->
     <div class="container">
-        <h1 class="text-center mb-4">Your Shopping Cart</h1>
+        <h1 class="text-center my-4 text-primary">Your Shopping Cart</h1>
         {% if cart_items %}
         <div class="cart-container">
             {% for item in cart_items %}
-            <div class="cart-card">
-                <h5>{{ item.name }}</h5>
-                <p>Price per Day: €{{ "%.2f"|format(item.price_per_day) }}</p>
-                <div class="cart-actions d-flex align-items-center gap-2">
-                    <select class="form-select days-dropdown" data-price="{{ item.price_per_day }}" data-id="{{ loop.index }}">
+            <div class="cart-item">
+                <div>
+                    <h5>{{ item.name }}</h5>
+                    <p>Price/Day: €{{ "%.2f"|format(item.price_per_day) }}</p>
+                </div>
+                <div class="cart-actions">
+                    <label for="days-{{ loop.index }}" class="form-label">Number of days:</label>
+                    <select class="form-select days-dropdown" id="days-{{ loop.index }}" data-price="{{ item.price_per_day }}">
                         {% for day in range(1, 15) %}
                         <option value="{{ day }}" {% if day == item.days %}selected{% endif %}>{{ day }} day{% if day > 1 %}s{% endif %}</option>
                         {% endfor %}
                     </select>
                     <form action="{{ url_for('main.remove_from_cart', listing_id=item.id) }}" method="post">
-                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Remove</button>
+                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                     </form>
                 </div>
             </div>
@@ -168,20 +143,32 @@
 
         <div class="summary">
             <h4>Order Summary</h4>
-            <p><span>Subtotal:</span> €<span id="subtotal">{{ "%.2f"|format(total_price) }}</span></p>
-            <p><span>Commission (5%):</span> €<span id="commission">{{ "%.2f"|format(commission_fee) }}</span></p>
-            <p><span>Total:</span> €<span id="grand-total">{{ "%.2f"|format(grand_total) }}</span></p>
-            <form action="{{ url_for('main.confirm_order') }}" method="post" class="text-end">
-                <button class="btn btn-primary px-5 py-2 mt-3">Confirm Order</button>
-            </form>
+            <p>Subtotal: €<span id="subtotal">{{ "%.2f"|format(total_price) }}</span></p>
+            <p>Commission: €<span id="commission">{{ "%.2f"|format(commission_fee) }}</span></p>
+            <p>Total: €<span id="grand-total">{{ "%.2f"|format(grand_total) }}</span></p>
+            <div class="d-flex justify-content-between">
+                <form action="{{ url_for('main.search_listings') }}" method="get">
+                    <button type="submit" class="btn btn-primary px-4 py-2 mt-3">Continue Shopping</button>
+                </form>
+                <form action="{{ url_for('main.confirm_order') }}" method="post">
+                    <button type="submit" class="btn btn-primary px-4 py-2 mt-3">Confirm Order</button>
+                </form>
+            </div>
+            
         </div>
         {% else %}
-        <p class="text-center">Your cart is empty.</p>
-        {% endif %}
+<div class="text-center">
+    <p>Your cart is currently empty.</p>
+    <a href="{{ url_for('main.search_listings') }}" class="btn btn-primary mt-3">
+        Browse Listings
+    </a>
+</div>
+{% endif %}
+
     </div>
 
     <footer>
-        <p>&copy; {{ datetime.now().year }} EasyTools. All Rights Reserved.</p>
+        <p>&copy; {{ datetime.now().year }} EasyTools. <a href="{{ url_for('main.index') }}">Home</a></p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -192,11 +179,8 @@
                 document.querySelectorAll(".days-dropdown").forEach((dropdown) => {
                     const days = parseInt(dropdown.value);
                     const pricePerDay = parseFloat(dropdown.dataset.price);
-                    const totalPrice = days * pricePerDay;
-
-                    subtotal += totalPrice;
+                    subtotal += days * pricePerDay;
                 });
-
                 const commission = subtotal * 0.05;
                 const grandTotal = subtotal + commission;
 
@@ -204,7 +188,6 @@
                 document.getElementById("commission").textContent = commission.toFixed(2);
                 document.getElementById("grand-total").textContent = grandTotal.toFixed(2);
             };
-
             document.querySelectorAll(".days-dropdown").forEach((dropdown) => {
                 dropdown.addEventListener("change", updatePrices);
             });
