@@ -12,47 +12,33 @@
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        /* Dropdown Button Styling */
         .dropdown-toggle {
-            background-color: #0d6efd; /* Set dropdown button color */
-            color: white; /* Ensure the text is readable */
-            border: none; /* Remove border if needed */
-            border-radius: 50px; /* Match other button styles */
-            padding: 0.5rem 1rem; /* Adjust padding for better spacing */
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
             transition: background-color 0.2s ease-in-out, box-shadow 0.2s;
         }
-        
         .dropdown-toggle:hover, .dropdown-toggle:focus {
-            background-color: #0056b3; /* Darker shade on hover */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow on hover */
+            background-color: #0056b3;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        /* General Button Styling for Rounded Corners */
         .btn {
-            border-radius: 50px; /* Apply consistent roundness to all buttons */
+            border-radius: 50px;
         }
-
-        /* Ensure dropdown buttons match styling */
-        .dropdown-toggle {
-            border-radius: 50px; /* Match other button styles */
-        }
-
-        /* Danger Button (Red) Specific Styling */
         .btn-danger {
-            border-radius: 50px; /* Ensure the red buttons are round */
+            border-radius: 50px;
         }
-
-
         .container {
             margin-top: 0;
         }
-
         .cart-header {
             font-size: 1.75rem;
             font-weight: bold;
             color: #0d6efd;
             margin-bottom: 20px;
         }
-
         .cart-item {
             background: #ffffff;
             border-radius: 10px;
@@ -60,29 +46,29 @@
             margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
         .cart-item img {
             width: 100px;
             height: 100px;
             object-fit: cover;
             border-radius: 10px;
         }
-
         .cart-item h5 {
             font-size: 1.25rem;
             font-weight: bold;
         }
-
         .cart-item p {
             font-size: 0.9rem;
             color: #6c757d;
             margin: 5px 0;
         }
-
         .cart-item .btn {
             border-radius: 50px;
         }
-
+        .cart-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between dropdown and button */
+        }
         .summary {
             background: #ffffff;
             padding: 20px;
@@ -90,37 +76,31 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
         }
-
         .summary h4 {
             margin-bottom: 15px;
             font-size: 1.5rem;
         }
-
         footer {
             background-color: #343a40;
             color: white;
             padding: 15px 0;
             text-align: center;
         }
-
         footer p {
             margin: 0;
         }
-        
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <!-- Updated href attribute to direct to the index page -->
             <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
                     aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -165,7 +145,7 @@
             <div class="cart-card">
                 <h5>{{ item.name }}</h5>
                 <p>Price per Day: €{{ "%.2f"|format(item.price_per_day) }}</p>
-                <div class="cart-actions">
+                <div class="cart-actions d-flex align-items-center gap-2">
                     <select class="form-select days-dropdown" data-price="{{ item.price_per_day }}" data-id="{{ loop.index }}">
                         {% for day in range(1, 15) %}
                         <option value="{{ day }}" {% if day == item.days %}selected{% endif %}>{{ day }} day{% if day > 1 %}s{% endif %}</option>
@@ -206,7 +186,6 @@
                     const days = parseInt(dropdown.value);
                     const pricePerDay = parseFloat(dropdown.dataset.price);
                     const totalPrice = days * pricePerDay;
-                    const id = dropdown.dataset.id;
 
                     subtotal += totalPrice;
                 });
@@ -226,12 +205,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
