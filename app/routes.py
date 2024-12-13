@@ -204,23 +204,31 @@ def add_listing():
 
 @main.route('/remove-listing/<int:listing_id>', methods=['POST'])
 def remove_listing(listing_id):
+    # Check if the user is logged in
     if 'phone_number' not in session:
-        flash("You need to be logged in to remove a listing.", "error")
-        return redirect(url_for('main.login'))
+        flash("You need to log in to perform this action.", "warning")
+        return redirect(url_for('auth.login'))
 
-    listing = Listing.query.filter_by(listing_id=listing_id, provider_id=session['phone_number']).first()
+    # Fetch the listing associated with the logged-in provider
+    phone_number = session['phone_number']
+    listing = Listing.query.filter_by(listing_id=listing_id, provider_id=phone_number).first()
+
+    # If the listing does not exist or does not belong to the user
     if not listing:
-        flash("You are not authorized to remove this listing.", "error")
-        return redirect(url_for('main.index'))
+        flash("Listing not found or you don't have permission to delete this listing.", "danger")
+        return redirect(url_for('main.profile'))
 
+    # Attempt to delete the listing
     try:
         db.session.delete(listing)
         db.session.commit()
-        flash("The listing has been removed from your dashboard.", "success")
+        flash("Listing successfully removed.", "success")
     except Exception as e:
         db.session.rollback()
-        flash("There was an error removing the listing.", "error")
+        flash("An error occurred while removing the listing. Please try again.", "danger")
+        print("Error removing listing:", str(e))
 
+    # Redirect to the profile page
     return redirect(url_for('main.profile'))
 
 
