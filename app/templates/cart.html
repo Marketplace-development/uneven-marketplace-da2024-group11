@@ -8,27 +8,54 @@
     <style>
         body {
             background-color: #f8f9fa;
-            font-family: 'Roboto', sans-serif;
         }
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background-color: #0d6efd;
         }
-        .navbar-brand {
-            color: #fff !important;
-            font-size: 1.5rem;
+        h1, h2 {
+            color: #343a40;
         }
-        .btn {
-            border-radius: 50px;
-        }
-        .dropdown-toggle {
-            color: #fff !important;
-            background-color: #0056b3;
-            border-radius: 50px;
-        }
-        .dropdown-menu {
+        
+        .list-group-item {
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .list-group-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary, .btn-info, .btn-danger, .btn-warning {
+            border-radius: 50px;
+        }
+        /* Dropdown Button Styling */
+        .dropdown-toggle {
+            background-color: #0d6efd; /* Set dropdown button color */
+            color: white; /* Ensure the text is readable */
+            border: none; /* Remove border if needed */
+            border-radius: 50px; /* Match other button styles */
+            padding: 0.5rem 1rem; /* Adjust padding for better spacing */
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s;
+        }
+        
+        .dropdown-toggle:hover, .dropdown-toggle:focus {
+            background-color: #0056b3; /* Darker shade on hover */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow on hover */
+        }
+        /* General Button Styling for Rounded Corners */
+        .btn {
+            border-radius: 50px; /* Apply consistent roundness to all buttons */
+        }
+
+        /* Ensure dropdown buttons match styling */
+        .dropdown-toggle {
+            border-radius: 50px; /* Match other button styles */
+        }
+
+        /* Danger Button (Red) Specific Styling */
+        .btn-danger {
+            border-radius: 50px; /* Ensure the red buttons are round */
         }
         .cart-container {
             margin-top: 30px;
@@ -76,39 +103,45 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">EasyTools</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Updated href attribute to direct to the index page -->
+            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.index') }}">EasyTools</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <button class="btn dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            {% if username %}
-                                Welcome, {{ username }}
-                            {% else %}
-                                Menu
-                            {% endif %}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            {% if username %}
-                                <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Products</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.cart') }}">Cart</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
-                                        <button class="btn btn-danger btn-sm w-100" type="submit">Logout</button>
-                                    </form>
-                                </li>
-                            {% else %}
-                                <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
-                            {% endif %}
-                        </ul>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if username %}
+                                    Welcome, <strong>{{ username }}</strong>
+                                {% else %}
+                                    Pages
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                {% if username %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Profile</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.add_listing') }}">Add Products</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.search_listings') }}">Search Product</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.cart') }}">Cart</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ url_for('main.logout') }}" method="post" class="d-inline">
+                                            <button class="btn btn-danger btn-sm w-100" type="submit" aria-label="Log out">Logout</button>
+                                        </form>
+                                    </li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Login</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Register</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -168,7 +201,7 @@
     </div>
 
     <footer>
-        <p>&copy; {{ datetime.now().year }} EasyTools. <a href="{{ url_for('main.index') }}">Home</a></p>
+        <p>&copy; {{ datetime.now().year }} EasyTools. All Rights Reserved. <a href="{{ url_for('main.index') }}">Home</a></p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
