@@ -157,7 +157,7 @@
             <div class="cart-item">
                 <div>
                     <h5>{{ item.name }}</h5>
-                    <p>Price/Day: €{{ "%.2f"|format(item.price_per_day) }}</p>
+                    <p>Price/Day: ${{ "%.2f"|format(item.price_per_day) }}</p>
                 </div>
                 <div class="cart-actions">
                     <label for="days-{{ loop.index }}" class="form-label">Number of days:</label>
@@ -176,9 +176,9 @@
 
         <div class="summary">
             <h4>Order Summary</h4>
-            <p>Subtotal: €<span id="subtotal">{{ "%.2f"|format(total_price) }}</span></p>
-            <p>Commission: €<span id="commission">{{ "%.2f"|format(commission_fee) }}</span></p>
-            <p>Total: €<span id="grand-total">{{ "%.2f"|format(grand_total) }}</span></p>
+            <p>Subtotal: $<span id="subtotal">{{ "%.2f"|format(total_price) }}</span></p>
+            <p>Commission: $<span id="commission">{{ "%.2f"|format(commission_fee) }}</span></p>
+            <p>Total: $<span id="grand-total">{{ "%.2f"|format(grand_total) }}</span></p>
             <div class="d-flex justify-content-between">
                 <form action="{{ url_for('main.search_listings') }}" method="get">
                     <button type="submit" class="btn btn-primary px-4 py-2 mt-3">Continue Shopping</button>
